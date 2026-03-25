@@ -14,4 +14,6 @@ val AzulEscuro = Color(0xFF2C4E8D)
 val AzulEnvelhicido = Color(0xFF7C91B8)
 val AzulClaro = Color(0xFFB1CCFF)
 val Cinza = Color(0xFFE0E0E0)
-val Laranja = Color(0xFFF3BB61)
+val Laranja = Color(0xFFEC9E21)
+val AzulFundo = Color(0xFF1F263F)
+
