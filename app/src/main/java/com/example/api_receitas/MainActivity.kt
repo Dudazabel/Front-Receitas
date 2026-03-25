@@ -5,7 +5,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.example.api_receitas.features.authentication.ui.AuthenticationLogIn
 import com.example.api_receitas.features.authentication.ui.AuthenticationSignIn
 import com.example.api_receitas.ui.theme.APIReceitasTheme
 
@@ -14,8 +19,30 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             APIReceitasTheme {
-                Surface (modifier = Modifier.fillMaxSize()){
-                    AuthenticationSignIn()
+                Surface(modifier = Modifier.fillMaxSize()) {
+
+                    var telaAtual by remember { mutableStateOf("login") }
+
+                    if (telaAtual == "login") {
+
+                        AuthenticationLogIn(
+                            onNavigateToHome = {
+                            },
+                            onNavigateToSignUp = {
+                                telaAtual = "signin"
+                            }
+                        )
+
+                    } else if (telaAtual == "signin") {
+
+                        AuthenticationSignIn(
+                            onNavigateToLogin = {
+                                telaAtual = "login"
+                            }
+                        )
+
+                    }
+
                 }
             }
         }

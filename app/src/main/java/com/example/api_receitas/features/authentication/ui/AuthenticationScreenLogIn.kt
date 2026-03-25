@@ -1,6 +1,7 @@
 package com.example.api_receitas.features.authentication.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,81 +26,122 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.api_receitas.features.authentication.viewmodel.AuthViewModel
 import com.example.api_receitas.ui.theme.AzulFundo
 import com.example.api_receitas.ui.theme.Laranja
 
-    @Composable
-    fun AuthenticationLogIn(modifier: Modifier = Modifier){
-        Box (modifier = Modifier.fillMaxSize()){
-            Box(modifier = Modifier
+@Composable
+fun AuthenticationLogIn(
+    modifier: Modifier = Modifier,
+    viewModel: AuthViewModel = AuthViewModel(),
+    onNavigateToHome: () -> Unit,
+    onNavigateToSignUp: () -> Unit
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
                 .fillMaxWidth()
-                .background(AzulFundo)){
-                Column (modifier = Modifier
+                .background(AzulFundo)
+        ) {
+            Column(
+                modifier = Modifier
                     .fillMaxSize()
                     .padding(top = 160.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                    ){
-                    Text(text = "Log In",
-                        color = Color.White,
-                        fontSize = 27.sp
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Log In",
+                    color = Color.White,
+                    fontSize = 27.sp
+                )
+                Spacer(modifier = Modifier.height(15.dp))
+                Text(
+                    text = "Faça Log In em uma conta existente!",
+                    color = Color.White,
+                    fontSize = 16.sp
+                )
+            }
+        }
+
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .offset(y = 350.dp),
+            shape = RoundedCornerShape(topEnd = 24.dp, topStart = 24.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(top = 50.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                var email by remember { mutableStateOf("") }
+                var senha by remember { mutableStateOf("") }
+
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Digite o seu email: ") }
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                OutlinedTextField(
+                    value = senha,
+                    onValueChange = { senha = it },
+                    label = { Text("Digite a sua senha: ") },
+                    visualTransformation = PasswordVisualTransformation()
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+
+                if (viewModel.mensagemFeedback.isNotEmpty()) {
+                    Text(
+                        text = viewModel.mensagemFeedback,
+                        color = Color.Red,
+                        fontSize = 14.sp
                     )
-                    Spacer(modifier = Modifier.height(15.dp))
-                    Text(text = "Faça Log In em uma conta existente!",
-                        color = Color.White,
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
+
+                Button(
+                    onClick = {
+                        if (email.isNotBlank() && senha.isNotBlank()) {
+                            viewModel.fazerLogin(email, senha) {
+                                onNavigateToHome()
+                            }
+                        } else {
+                            viewModel.mensagemFeedback = "Preencha o e-mail e a senha!"
+                        }
+                    },
+                    modifier = Modifier.width(150.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Laranja),
+                    enabled = !viewModel.EstaLogado
+                ) {
+                    Text(
+                        text = if (viewModel.EstaLogado) "Aguarde..." else "Log In",
                         fontSize = 16.sp
                     )
                 }
-            }
 
-            Surface(modifier = Modifier
-                .fillMaxSize()
-                .offset(y = 350.dp),
-                shape = RoundedCornerShape(topEnd = 24.dp, topStart = 24.dp)
-            ) {
-                Column(modifier = Modifier
-                    .padding(top = 50.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally){
-                    var email by remember { mutableStateOf("") }
-                    var senha by remember { mutableStateOf("") }
-                    
-                    OutlinedTextField(
-                        value = email, 
-                        onValueChange = {email = it},
-                        label = { Text("Digite o seu email: ")}
+                Spacer(modifier = Modifier.height(40.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "Não tem uma conta?",
+                        fontSize = 16.sp
                     )
-                    
-                    Spacer(modifier = Modifier.height(20.dp))
-                
-                    OutlinedTextField(
-                        value = senha, 
-                        onValueChange = {senha = it},
-                        label = { Text("Digite a sua senha: ")
-                        }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Sign Up",
+                        color = Laranja,
+                        fontSize = 16.sp,
+                        modifier = Modifier.clickable { onNavigateToSignUp() }
                     )
-                    
-                    Spacer(modifier = Modifier.height(40.dp))
-                    
-                    Button(onClick = {  },
-                        modifier = Modifier.width(150.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Laranja) ){
-                        Text(text = "Log In",
-                            fontSize = 16.sp)
-                    }
-
-                    Spacer(modifier = Modifier.height(40.dp))
-
-                    Row {
-                        Text(text = "Não tem uma conta?",
-                            fontSize = 16.sp)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = "Sign Up",
-                            color = Laranja,
-                            fontSize = 16.sp
-                        )
-                    }
                 }
             }
         }
     }
+}
