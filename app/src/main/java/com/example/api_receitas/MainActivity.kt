@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import com.example.api_receitas.features.authentication.ui.AuthenticationLogIn
 import com.example.api_receitas.features.authentication.ui.AuthenticationSignIn
 import com.example.api_receitas.features.details.ui.RecipeDetailScreen
+import com.example.api_receitas.features.home.ui.HomeScreen
 import com.example.api_receitas.ui.theme.APIReceitasTheme
 
 class MainActivity : ComponentActivity() {
@@ -27,13 +28,8 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 
-                    RecipeDetailScreen(
-                        receitaId = 1L,
-                        onVoltarClick = {
+                   HomeScreen()
 
-                            println("Usuário clicou em voltar")
-                        }
-                    )
                 }
             }
         }
