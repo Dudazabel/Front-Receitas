@@ -71,8 +71,8 @@ fun AppNavigation() {
             arguments = listOf(navArgument("recipeId"){
                 type = NavType.LongType
             })
-        ) {
-            val recipeId = backStackEntry.arguments?.getLong("recipeId") ?: 0
+        ) { backStackEntry ->
+            val recipeId = backStackEntry.arguments?.getLong("recipeId") ?: 0L
 
             RecipeDetailScreen(
                 receitaId = recipeId,
@@ -83,10 +83,10 @@ fun AppNavigation() {
         composable(
             route = Screen.Edit.route,
             arguments = listOf(navArgument("recipeId"){
-                type = NavType.IntType
+                type = NavType.LongType
             })
         ) { backStackEntry ->
-            val recipeId = backStackEntry.arguments?.getInt("recipeId") ?: 0
+            val recipeId = backStackEntry.arguments?.getLong("recipeId") ?: 0L
 
             RecipeEditScreen(
                 recipeId = recipeId,

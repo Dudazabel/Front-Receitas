@@ -1,7 +1,6 @@
 package com.example.api_receitas.features.create.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -47,7 +46,11 @@ data class Passos(
 )
 
 @Composable
-fun CreateRecipe(modifier: Modifier = Modifier) {
+fun CreateRecipe(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit,
+    onRecipeSaved: () -> Unit
+) {
 
     var nomeReceita by remember { mutableStateOf("") }
     var descricaoReceita by remember { mutableStateOf("") }
@@ -65,7 +68,7 @@ fun CreateRecipe(modifier: Modifier = Modifier) {
 
         item {
             Row (verticalAlignment = Alignment.CenterVertically){
-                IconButton(onClick = { },
+                IconButton(onClick = { onBackClick() },
                     modifier = Modifier
                         .background(Cinza, CircleShape)
                         .size(48.dp)
@@ -227,7 +230,7 @@ fun CreateRecipe(modifier: Modifier = Modifier) {
         
         item {
             Spacer(modifier = Modifier.height(40.dp))
-            Button(onClick = { },
+            Button(onClick = { onRecipeSaved() },
                 colors = ButtonDefaults.textButtonColors(containerColor = Laranja),
                 modifier = Modifier.fillMaxWidth()) {
                 Text(text = "Criar Receita",

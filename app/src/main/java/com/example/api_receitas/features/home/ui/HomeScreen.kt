@@ -52,18 +52,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.api_receitas.R
 import com.example.api_receitas.data.model.receita.ReceitaResposta
-import com.example.api_receitas.features.authentication.viewmodel.AuthViewModel
 import com.example.api_receitas.features.details.viewmodel.ReceitaViewModel
 import com.example.api_receitas.ui.theme.AzulClaro
 import com.example.api_receitas.ui.theme.Laranja
 
 @Composable
 fun HomeScreen(
-    onRecipeClick: (Int) -> Unit,
+    viewModel: ReceitaViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    onRecipeClick: (Long) -> Unit,
     onAddRecipeClick: () -> Unit
 ){
-fun HomeScreen(viewModel: ReceitaViewModel = androidx.lifecycle.viewmodel.compose.viewModel()){
-
     LaunchedEffect(Unit) {
         viewModel.buscarTodasAsReceitas()
     }
@@ -76,13 +74,15 @@ fun HomeScreen(viewModel: ReceitaViewModel = androidx.lifecycle.viewmodel.compos
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            Conteudo(onRecipeClick = onRecipeClick)
-            if(viewModel.EstaLogado) {
+            if(viewModel.EstaLogado && viewModel.listaReceitas.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             }else{
-                Conteudo(receitas = viewModel.listaReceitas)
+                Conteudo(
+                    receitas = viewModel.listaReceitas,
+                    onRecipeClick = onRecipeClick
+                )
             }
         }
     }
@@ -90,11 +90,9 @@ fun HomeScreen(viewModel: ReceitaViewModel = androidx.lifecycle.viewmodel.compos
 
 @Composable
 fun Conteudo(
-    onRecipeClick: (Int) -> Unit
+    receitas: List<ReceitaResposta>,
+    onRecipeClick: (Long) -> Unit
 ){
-    val receitasDaApi = listOf("")
-
-fun Conteudo(receitas: List<ReceitaResposta>){
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -107,7 +105,10 @@ fun Conteudo(receitas: List<ReceitaResposta>){
         item{ RecipeFilter() }
 
         items(receitas){ receita ->
-            RecipeCard(receita = receita)
+            RecipeCard(
+                receita = receita,
+                onClick = { onRecipeClick(receita.id) }
+            )
         }
         item{ Spacer(modifier = Modifier.height(80.dp))}
     }
@@ -248,10 +249,9 @@ fun CategoriesSection(){
 
 @Composable
 fun RecipeCard(
-    recipeId: Int,
+    receita: ReceitaResposta,
     onClick: () -> Unit
 ){
-fun RecipeCard(receita: ReceitaResposta){
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -276,7 +276,12 @@ fun RecipeCard(receita: ReceitaResposta){
             modifier = Modifier.padding(horizontal = 8.dp)
         )
 
-        val resumoIngredientes = receita.ingredientes.take(3).joinToString(" - ") { it.nome }
+        val resumoIngredientes = if (receita.ingredientes.isNotEmpty()){
+            receita.ingredientes.take(3).joinToString(" - ") { it.nome }
+        } else {
+            "Sem ingredientes listados"
+        }
+
         Text(
             text = resumoIngredientes,
             color = Color.Gray,

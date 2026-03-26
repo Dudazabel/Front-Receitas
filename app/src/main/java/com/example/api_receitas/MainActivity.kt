@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.api_receitas.features.details.ui.RecipeDetailScreen
+import com.example.api_receitas.navigation.AppNavigation
 import com.example.api_receitas.ui.theme.APIReceitasTheme
 
 class MainActivity : ComponentActivity() {
@@ -15,19 +16,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             APIReceitasTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-
-                    RecipeDetailScreen(
-                        receitaId = 1L,
-                        onVoltarClick = {
-
-                            println("Usuário clicou em voltar")
-                        }
-                    )
-                }
+                AppNavigation()
             }
         }
     }
