@@ -22,7 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -51,7 +50,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.api_receitas.R
 import com.example.api_receitas.ui.theme.AzulClaro
-import com.example.api_receitas.ui.theme.AzulEscuro
 import com.example.api_receitas.ui.theme.Laranja
 
 @Composable

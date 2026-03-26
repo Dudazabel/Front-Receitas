@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.api_receitas.features.details.ui.RecipeDetailScreen
+import com.example.api_receitas.features.edit.ui.RecipeEditScreen
 import com.example.api_receitas.features.home.ui.HomeScreen
 import com.example.api_receitas.ui.theme.APIReceitasTheme
 
@@ -17,7 +18,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             APIReceitasTheme {
                 Surface(modifier = Modifier.fillMaxWidth()) {
-                    HomeScreen()
+                    RecipeEditScreen()
                 }
             }
         }
