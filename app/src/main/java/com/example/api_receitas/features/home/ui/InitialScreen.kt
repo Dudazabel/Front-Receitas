@@ -1,13 +1,12 @@
 package com.example.api_receitas.features.home.ui
 
-
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -16,9 +15,17 @@ import com.example.api_receitas.R
 
 
 import androidx.compose.ui.layout.ContentScale
+import kotlinx.coroutines.delay
 
 @Composable
-fun InitialScreenLogo() {
+fun InitialScreenLogo(
+    onNavigateToOnboarding: () -> Unit
+) {
+    LaunchedEffect(Unit) {
+        delay(2500)
+        onNavigateToOnboarding()
+    }
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center

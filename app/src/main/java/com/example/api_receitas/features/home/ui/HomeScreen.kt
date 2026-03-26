@@ -53,23 +53,28 @@ import com.example.api_receitas.ui.theme.AzulClaro
 import com.example.api_receitas.ui.theme.Laranja
 
 @Composable
-fun HomeScreen(){
+fun HomeScreen(
+    onRecipeClick: (Int) -> Unit,
+    onAddRecipeClick: () -> Unit
+){
     Scaffold(
         topBar = { Header() },
-        bottomBar = { BottomNavBar() }
+        bottomBar = { BottomNavBar(onAddClick = onAddRecipeClick) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            Conteudo()
+            Conteudo(onRecipeClick = onRecipeClick)
         }
     }
 }
 
 @Composable
-fun Conteudo(){
+fun Conteudo(
+    onRecipeClick: (Int) -> Unit
+){
     val receitasDaApi = listOf("")
 
     LazyColumn(
@@ -95,7 +100,9 @@ fun Conteudo(){
 }
 
 @Composable
-fun BottomNavBar(){
+fun BottomNavBar(
+    onAddClick: () -> Unit
+){
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -118,7 +125,7 @@ fun BottomNavBar(){
                     modifier = Modifier.size(26.dp)
                 )
             }
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = onAddClick) {
                 Box(
                     modifier = Modifier
                         .size(56.dp)
@@ -226,11 +233,15 @@ fun CategoriesSection(){
 }
 
 @Composable
-fun RecipeCard(){
+fun RecipeCard(
+    recipeId: Int,
+    onClick: () -> Unit
+){
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White, RoundedCornerShape(16.dp))
+            .clickable { onClick() }
             .padding(bottom = 16.dp)
     ) {
         Box(

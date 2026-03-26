@@ -47,7 +47,7 @@ data class Passos(
 )
 
 @Composable
-fun createRecipe(modifier: Modifier = Modifier) {
+fun CreateRecipe(modifier: Modifier = Modifier) {
 
     var nomeReceita by remember { mutableStateOf("") }
     var descricaoReceita by remember { mutableStateOf("") }
