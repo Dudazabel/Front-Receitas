@@ -102,8 +102,7 @@ fun TopImage(){
 @Composable
 fun InfoSection(){
     Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             painter = painterResource(R.drawable.clock),
