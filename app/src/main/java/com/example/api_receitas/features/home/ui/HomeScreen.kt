@@ -1,6 +1,7 @@
 package com.example.api_receitas.features.home.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,7 +21,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -60,6 +65,32 @@ fun HomeScreen(){
         ) {
             Conteudo()
         }
+    }
+}
+
+@Composable
+fun Conteudo(){
+    val receitasDaApi = listOf("")
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+        item{ SearchSection() }
+        item{ CategoriesSection() }
+
+        item{
+            RecipeFilter()
+        }
+        items(receitasDaApi){ receita ->
+            RecipeCard()
+        }
+        item{ Spacer(modifier = Modifier.height(80.dp))}
     }
 }
 
@@ -110,32 +141,6 @@ fun BottomNavBar(){
                 )
             }
         }
-    }
-}
-
-@Composable
-fun Conteudo(){
-    val receitasDaApi = listOf("")
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
-    ) {
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-        item{ SearchSection() }
-        item{ CategoriesSection() }
-
-        item{
-            SectionTitle(title = "Suas Receitas", actionText = "Veja Todas")
-        }
-        items(receitasDaApi){ receita ->
-            RecipeCard()
-        }
-        item{ Spacer(modifier = Modifier.height(80.dp))}
     }
 }
 
@@ -272,6 +277,138 @@ fun RecipeCard(){
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text("4", fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@Composable
+fun RecipeFilter(){
+    var menuExpandido by remember {
+        mutableStateOf(false)
+    }
+    var filtroAtual by remember {
+        mutableStateOf("Todos")
+    }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "Suas Receitas",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Box{
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.clickable { menuExpandido = true }
+            ) {
+                Text(
+                    text = if(filtroAtual == "Todos") "Filtrar" else filtroAtual,
+                    color = Color.Gray,
+                    fontSize = 14.sp
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Icon(
+                    Icons.AutoMirrored.Filled.List,
+                    contentDescription = "Filtro",
+                    tint = Color.Gray,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+            DropdownMenu(
+                expanded = menuExpandido,
+                onDismissRequest = { menuExpandido = false }
+            ) {
+                Text(
+                    text = "Tempo de Preparo",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                )
+                DropdownMenuItem(
+                    text = { Text("5-10 min") },
+                    onClick = {
+                        filtroAtual = "5-10 min"
+                        menuExpandido = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("10-20 min") },
+                    onClick = {
+                        filtroAtual = "10-20 min"
+                        menuExpandido = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("20-40 min") },
+                    onClick = {
+                        filtroAtual = "20-40 min"
+                        menuExpandido = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("+50 min") },
+                    onClick = {
+                        filtroAtual = "+50 min"
+                        menuExpandido = false
+                    }
+                )
+
+                HorizontalDivider()
+
+                Text(
+                    text = "Porções",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                )
+                DropdownMenuItem(
+                    text = { Text("1-3 porções") },
+                    onClick = {
+                        filtroAtual = "1-3 porções"
+                        menuExpandido = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("4-10 porções") },
+                    onClick = {
+                        filtroAtual = "4-10 porções"
+                        menuExpandido = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("10-15 porções") },
+                    onClick = {
+                        filtroAtual = "10-15 porções"
+                        menuExpandido = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("+15 porções") },
+                    onClick = {
+                        filtroAtual = "+15 porções"
+                        menuExpandido = false
+                    }
+                )
+
+                HorizontalDivider()
+                DropdownMenuItem(
+                    text = {
+                        Text("Mostrar Todas",
+                            color = Laranja,
+                            fontWeight = FontWeight.Bold)
+                           },
+                    onClick = {
+                        filtroAtual = "Todos"
+                        menuExpandido = false
+                    }
+                )
+            }
         }
     }
 }
