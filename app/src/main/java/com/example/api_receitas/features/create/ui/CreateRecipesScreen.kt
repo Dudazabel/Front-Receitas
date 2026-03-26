@@ -1,6 +1,7 @@
 package com.example.api_receitas.features.create.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,24 +13,29 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.api_receitas.ui.theme.Cinza
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
+import com.example.api_receitas.ui.theme.Laranja
 
 data class Ingredientes(
     val nome: String,
@@ -65,7 +71,7 @@ fun createRecipe(modifier: Modifier = Modifier) {
                         .size(48.dp)
                 ) {
                     Icon(
-                        Icons.Filled.KeyboardArrowLeft,
+                        Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                         contentDescription = "Voltar")
                 }
 
@@ -77,9 +83,10 @@ fun createRecipe(modifier: Modifier = Modifier) {
         }
 
         item {
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
-            Text(text = "Nome")
+            Text(text = "Nome",
+                fontSize = 17.sp)
             OutlinedTextField(
                 value = nomeReceita,
                 onValueChange = {nomeReceita = it},
@@ -90,7 +97,8 @@ fun createRecipe(modifier: Modifier = Modifier) {
         item {
             Spacer(modifier = Modifier.height(20.dp))
 
-            Text(text = "Descrição")
+            Text(text = "Descrição",
+                fontSize = 17.sp)
             OutlinedTextField(
                 value = descricaoReceita,
                 onValueChange = {descricaoReceita = it},
@@ -101,7 +109,8 @@ fun createRecipe(modifier: Modifier = Modifier) {
         item {
             Spacer(modifier = Modifier.height(20.dp))
 
-            Text(text = "Tempo de preparo")
+            Text(text = "Tempo de preparo",
+                fontSize = 17.sp)
             OutlinedTextField(
                 value = tempoPreparoString,
                 onValueChange = {tempoPreparoString = it
@@ -112,9 +121,10 @@ fun createRecipe(modifier: Modifier = Modifier) {
 
 
         item {
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
-            Text(text = "Ingrediente")
+            Text(text = "Ingrediente",
+                fontSize = 17.sp)
             OutlinedTextField(
                 value = nomeIngredientes,
                 onValueChange = {nomeIngredientes = it},
@@ -122,7 +132,7 @@ fun createRecipe(modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxWidth()
             )
             
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
             OutlinedTextField(
                 value = quantidade,
@@ -133,27 +143,37 @@ fun createRecipe(modifier: Modifier = Modifier) {
 
             Spacer(modifier = Modifier.height(8.dp))
             
-            Button(onClick = {
+            TextButton(onClick = {
                 if (nomeIngredientes.isNotBlank()
                     && quantidade.isNotBlank()) {
                     ingredientes.add(Ingredientes(nomeIngredientes, quantidade))
                     nomeIngredientes = ""
                     quantidade = ""
                 }
-            }) {
-                Text(text = "Adicionar Ingrediente")
+            },
+                colors = ButtonDefaults.textButtonColors(contentColor = Laranja),
+                modifier = Modifier.fillMaxWidth()
+                ) {
+                Icon(Icons.Default.Add, contentDescription = null)
+                Text(text = "Adicionar Ingrediente",
+                    fontSize = 17.sp)
             }
         }
 
         item {
-            Card {
-                Column {
-                    ingredientes.forEach {ingrediente ->
-                        Row {
-                            Text(text = ingrediente.quantidade)
-                            Spacer(modifier = Modifier.width(15.dp))
-                            Text(text = ingrediente.nome)
-                            Spacer(modifier = Modifier.width(20.dp))
+            if(ingredientes.isNotEmpty()){
+                Spacer(modifier = Modifier.height(20.dp))
+                Card (modifier = Modifier.fillMaxWidth()){
+                    Column (modifier = Modifier.padding(16.dp)){
+                        ingredientes.forEach {ingrediente ->
+                            Row (modifier = Modifier.fillMaxWidth()){
+                                Text(text = ingrediente.quantidade,
+                                    modifier = Modifier.weight(1f))
+                                Spacer(modifier = Modifier.width(30.dp))
+                                Text(text = ingrediente.nome,
+                                    modifier = Modifier.weight(2f))
+                            }
+                            Spacer(modifier = Modifier.height(20.dp))
                         }
                     }
                 }
@@ -161,9 +181,10 @@ fun createRecipe(modifier: Modifier = Modifier) {
         }
 
         item {
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
-            Text(text = "Passos")
+            Text(text = "Passos",
+                fontSize = 17.sp)
             OutlinedTextField(
                 value = descricaoPassos,
                 onValueChange = {descricaoPassos = it},
@@ -173,35 +194,46 @@ fun createRecipe(modifier: Modifier = Modifier) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Button(onClick = {
+            TextButton(onClick = {
                 if (descricaoPassos.isNotBlank()){
                     passos.add(Passos(descricaoPassos))
                     descricaoPassos = ""
                 }
-            }) {
-                Text(text = "Adicionar Passo")
+            },
+                colors = ButtonDefaults.textButtonColors(contentColor = Laranja),
+                modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Default.Add, contentDescription = null)
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(text = "Adicionar Passo",
+                    fontSize = 17.sp)
             }
         }
 
         item {
-            Card {
-                Column {
-                    passos.forEach {passo ->
-                        Row {
-                            Text(text = passo.descricao)
-                            Spacer(modifier = Modifier.width(20.dp))
+            if (passos.isNotEmpty()){
+                Spacer(modifier = Modifier.height(20.dp))
+                Card (modifier = Modifier.fillMaxWidth()){
+                    Column (modifier = Modifier.padding(16.dp)){
+                        passos.forEachIndexed {index, passo ->
+                            Row {
+                                Text(text = "${index + 1}. ${passo.descricao}")
+                            }
+                            Spacer(modifier = Modifier.height(20.dp))
                         }
                     }
                 }
             }
         }
         
-        item { 
-            Button(onClick = { /*TODO*/ }) {
-                Text(text = "Criar Receita")
+        item {
+            Spacer(modifier = Modifier.height(40.dp))
+            Button(onClick = { },
+                colors = ButtonDefaults.textButtonColors(containerColor = Laranja),
+                modifier = Modifier.fillMaxWidth()) {
+                Text(text = "Criar Receita",
+                    fontSize = 17.sp,
+                    color = Color.White)
             }
         }
-
-
     }
 }
