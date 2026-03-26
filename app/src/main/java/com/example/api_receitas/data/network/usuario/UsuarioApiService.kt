@@ -1,5 +1,7 @@
-import com.example.api_receitas.data.model.UsuarioRequisicao
-import com.example.api_receitas.data.model.UsuarioResposta
+package com.example.api_receitas.data.network.usuario
+
+import com.example.api_receitas.data.model.usuario.UsuarioRequisicao
+import com.example.api_receitas.data.model.usuario.UsuarioResposta
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -13,7 +15,7 @@ interface UsuarioApiService {
     suspend fun buscarUsuarioPorEmail(@Path("email") email: String): UsuarioResposta
 
     @POST("usuario")
-    suspend fun adicionarUsuario(@Body usuario: UsuarioRequisicao):UsuarioResposta
+    suspend fun adicionarUsuario(@Body usuario: UsuarioRequisicao): UsuarioResposta
 
 
     object RetrofitClient{

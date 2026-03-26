@@ -19,10 +19,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,34 +35,53 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.api_receitas.R
+import com.example.api_receitas.data.model.receita.IngredienteResposta
+import com.example.api_receitas.data.model.receita.PassoResposta
+import com.example.api_receitas.data.model.receita.ReceitaResposta
+import com.example.api_receitas.features.details.viewmodel.ReceitaViewModel
 
 @Composable
-fun RecipeDetailScreen(){
-    val ingredientes = listOf("Banana", "Banana", "Banana", "Banana")
-    val passos = listOf("um", "dois", "tres")
+fun RecipeDetailScreen(
+    receitaId:Long,
+    viewModel: ReceitaViewModel = ReceitaViewModel(),
+    onVoltarClick: () -> Unit
+){
+    LaunchedEffect(receitaId) {
+        viewModel.buscaReceitaPorId(receitaId)
+    }
+    val receita = viewModel.receita
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        item { TopImage() }
-        item {
-            Column(
-                modifier = Modifier.padding(horizontal = 24.dp)
-            ) {
-                Spacer(modifier = Modifier.height(24.dp))
-                InfoSection()
-                Spacer(modifier = Modifier.height(24.dp))
-                IngrendientSection(ingredientes)
-                Spacer(modifier = Modifier.height(24.dp))
-                PassoSection(passos)
+    if (viewModel.EstaLogado) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    } else if (viewModel.mensagemFeedback.isNotEmpty()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(text = viewModel.mensagemFeedback, color = Color.Red)
+        }
+    } else if (receita != null) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            item { TopImage(onVoltarClick) }
+            item {
+                Column(
+                    modifier = Modifier.padding(horizontal = 24.dp)
+                ) {
+                    Spacer(modifier = Modifier.height(24.dp))
+                    InfoSection(receita)
+                    Spacer(modifier = Modifier.height(24.dp))
+                    IngrendientSection(receita.ingredientes)
+                    Spacer(modifier = Modifier.height(24.dp))
+                    PassoSection(receita.passos)
+                }
             }
         }
     }
 }
 
 @Composable
-fun TopImage(){
+fun TopImage(onVoltarClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -100,7 +121,7 @@ fun TopImage(){
 }
 
 @Composable
-fun InfoSection(){
+fun InfoSection(receita: ReceitaResposta) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -111,7 +132,7 @@ fun InfoSection(){
         )
         Spacer(modifier = Modifier.width(6.dp))
         Text(
-            "30m",
+            text = "${receita.tempoPreparo.toInt()}m",
             fontWeight = FontWeight.Bold
         )
 
@@ -124,51 +145,50 @@ fun InfoSection(){
         )
         Spacer(modifier = Modifier.width(6.dp))
         Text(
-            "4",
+            text = "${receita.porcoes.toInt()}",
             fontWeight = FontWeight.Bold
         )
     }
     Spacer(modifier = Modifier.height(24.dp))
     Text(
-        text = "Titulo da receita",
+        text = receita.nome,
         fontSize = 24.sp,
         fontWeight = FontWeight.Bold,
         color = Black
     )
     Spacer(modifier = Modifier.height(12.dp))
     Text(
-        text = "Descrição da receita bla bla bla bla bla bla bla bla bla bla bla"
+        text = receita.descricao
     )
 }
 
 @Composable
-fun IngrendientSection(ingredientes: List<String>){
-    Row(
+fun IngrendientSection(ingredientes: List<IngredienteResposta>) {
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+            .padding(horizontal = 16.dp)
     ) {
-        Column {
-            ingredientes.forEach { ingrediente ->
-                Row(modifier = Modifier.padding(bottom = 8.dp)){
-                    Text(text = "• ", fontSize = 18.sp)
-                    Text(text = "1")
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Text(text = ingrediente)
-                }
+        ingredientes.forEach { ingrediente ->
+            Row(modifier = Modifier.padding(bottom = 8.dp)) {
+                Text(text = "• ", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text(text = ingrediente.quantidade, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(text = ingrediente.nome)
             }
         }
     }
 }
 
 @Composable
-fun PassoSection(passos: List<String>){
+fun PassoSection(passos: List<PassoResposta>) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        passos.forEachIndexed { index, passo ->
+        val passosOrdenados = passos.sortedBy { it.ordem }
+
+        passosOrdenados.forEachIndexed { index, passo ->
             Card(
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -181,7 +201,7 @@ fun PassoSection(passos: List<String>){
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(10.dp))
-                    Text(text = passo)
+                    Text(text = passo.descricao)
                 }
             }
         }

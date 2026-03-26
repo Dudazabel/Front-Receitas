@@ -1,4 +1,4 @@
-package com.example.api_receitas.data.model
+package com.example.api_receitas.data.model.usuario
 
 import android.provider.ContactsContract.CommonDataKinds.Email
 

@@ -5,7 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.api_receitas.data.model.UsuarioRequisicao
+import com.example.api_receitas.data.model.usuario.UsuarioRequisicao
+import com.example.api_receitas.data.network.usuario.UsuarioApiService
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
