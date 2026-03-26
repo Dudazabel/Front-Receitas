@@ -52,7 +52,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.api_receitas.R
 import com.example.api_receitas.data.model.receita.ReceitaResposta
-import com.example.api_receitas.features.authentication.viewmodel.AuthViewModel
 import com.example.api_receitas.features.details.viewmodel.ReceitaViewModel
 import com.example.api_receitas.ui.theme.AzulClaro
 import com.example.api_receitas.ui.theme.Laranja
@@ -77,14 +76,15 @@ fun HomeScreen(viewModel: ReceitaViewModel = androidx.lifecycle.viewmodel.compos
                     CircularProgressIndicator()
                 }
             }else{
-                Conteudo(receitas = viewModel.listaReceitas)
-            }
+                Conteudo(receitas = viewModel.listaReceitas, viewModel = viewModel)            }
         }
     }
 }
 
+
+
 @Composable
-fun Conteudo(receitas: List<ReceitaResposta>){
+fun Conteudo(receitas: List<ReceitaResposta>, viewModel: ReceitaViewModel){
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -94,7 +94,7 @@ fun Conteudo(receitas: List<ReceitaResposta>){
         item { Spacer(modifier = Modifier.height(16.dp)) }
         item{ SearchSection() }
         item{ CategoriesSection() }
-        item{ RecipeFilter() }
+        item{ RecipeFilter(viewModel = viewModel) }
 
         items(receitas){ receita ->
             RecipeCard(receita = receita)
@@ -293,12 +293,9 @@ fun RecipeCard(receita: ReceitaResposta){
 }
 
 @Composable
-fun RecipeFilter(){
+fun RecipeFilter(viewModel: ReceitaViewModel){
     var menuExpandido by remember {
         mutableStateOf(false)
-    }
-    var filtroAtual by remember {
-        mutableStateOf("Todos")
     }
 
     Row(
@@ -317,7 +314,7 @@ fun RecipeFilter(){
                 modifier = Modifier.clickable { menuExpandido = true }
             ) {
                 Text(
-                    text = if(filtroAtual == "Todos") "Filtrar" else filtroAtual,
+                    text = if(viewModel.filtroAtual == "Todos") "Filtrar" else viewModel.filtroAtual,
                     color = Color.Gray,
                     fontSize = 14.sp
                 )
@@ -343,29 +340,33 @@ fun RecipeFilter(){
                 DropdownMenuItem(
                     text = { Text("5-10 min") },
                     onClick = {
-                        filtroAtual = "5-10 min"
+                        viewModel.filtroAtual = "5-10 min"
                         menuExpandido = false
+                        viewModel.filtrarReceitasPorTempo(5.0,10.0)
                     }
                 )
                 DropdownMenuItem(
                     text = { Text("10-20 min") },
                     onClick = {
-                        filtroAtual = "10-20 min"
+                        viewModel.filtroAtual = "10-20 min"
                         menuExpandido = false
+                        viewModel.filtrarReceitasPorTempo(10.0, 20.0)
                     }
                 )
                 DropdownMenuItem(
                     text = { Text("20-40 min") },
                     onClick = {
-                        filtroAtual = "20-40 min"
+                        viewModel.filtroAtual = "20-40 min"
                         menuExpandido = false
+                        viewModel.filtrarReceitasPorTempo(20.0, 40.0)
                     }
                 )
                 DropdownMenuItem(
                     text = { Text("+50 min") },
                     onClick = {
-                        filtroAtual = "+50 min"
+                        viewModel.filtroAtual = "+50 min"
                         menuExpandido = false
+                        viewModel.filtrarReceitasPorTempo(50.0, 11120.0)
                     }
                 )
 
@@ -381,28 +382,28 @@ fun RecipeFilter(){
                 DropdownMenuItem(
                     text = { Text("1-3 porções") },
                     onClick = {
-                        filtroAtual = "1-3 porções"
+                        viewModel.filtroAtual = "1-3 porções"
                         menuExpandido = false
                     }
                 )
                 DropdownMenuItem(
                     text = { Text("4-10 porções") },
                     onClick = {
-                        filtroAtual = "4-10 porções"
+                        viewModel.filtroAtual = "4-10 porções"
                         menuExpandido = false
                     }
                 )
                 DropdownMenuItem(
                     text = { Text("10-15 porções") },
                     onClick = {
-                        filtroAtual = "10-15 porções"
+                        viewModel.filtroAtual = "10-15 porções"
                         menuExpandido = false
                     }
                 )
                 DropdownMenuItem(
                     text = { Text("+15 porções") },
                     onClick = {
-                        filtroAtual = "+15 porções"
+                        viewModel.filtroAtual = "+15 porções"
                         menuExpandido = false
                     }
                 )
@@ -413,10 +414,11 @@ fun RecipeFilter(){
                         Text("Mostrar Todas",
                             color = Laranja,
                             fontWeight = FontWeight.Bold)
-                           },
+                    },
                     onClick = {
-                        filtroAtual = "Todos"
+                        viewModel.filtroAtual = "Todos"
                         menuExpandido = false
+                        viewModel.buscarTodasAsReceitas()
                     }
                 )
             }

@@ -17,6 +17,7 @@ class ReceitaViewModel: ViewModel() {
         var EstaLogado by mutableStateOf(true)
         var mensagemFeedback by mutableStateOf("")
         var listaReceitas by mutableStateOf<List<ReceitaResposta>>(emptyList())
+        var filtroAtual by mutableStateOf("Todos")
     fun buscaReceitaPorId(id: Long) {
         viewModelScope.launch {
             EstaLogado = true
@@ -52,6 +53,24 @@ class ReceitaViewModel: ViewModel() {
 
             }finally {
                 EstaLogado = false;
+            }
+        }
+    }
+
+    fun filtrarReceitasPorTempo(min:Double, max:Double){
+        viewModelScope.launch {
+            EstaLogado = true
+            try {
+                val resposta = ReceitaApiService.RetrofitClient.apiService.filtrarReceitasPorTempo(min, max)
+                if(resposta.isSuccessful){
+                    listaReceitas = resposta.body() ?: emptyList()
+                }else{
+                    mensagemFeedback = "Nao foi encontrado nenhuma receita nesse filtro ${resposta.code()}"
+                }
+            }catch (e:Exception){
+                mensagemFeedback = "Nao foi possivel se conectar a api ${e.message}"
+            }finally {
+                EstaLogado = false
             }
         }
     }

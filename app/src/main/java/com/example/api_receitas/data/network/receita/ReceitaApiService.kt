@@ -8,6 +8,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
 
 interface ReceitaApiService {
@@ -16,6 +17,14 @@ interface ReceitaApiService {
     suspend fun buscarReceitaPorId(@Path("id") id: Long): Response<ReceitaResposta>
     @GET("receita")
     suspend fun ListarTodasAsReceitas(): Response<List<ReceitaResposta>>
+    @GET("receita/filtro/tempo")
+    suspend fun filtrarReceitasPorTempo(
+        @Query("tempoMin") min: Double,
+        @Query("tempoMax") max: Double
+    ): Response<List<ReceitaResposta>>
+
+
+
     object RetrofitClient {
         private const val BASE_URL = "https://api-receitas-pb3e.onrender.com/"
 
