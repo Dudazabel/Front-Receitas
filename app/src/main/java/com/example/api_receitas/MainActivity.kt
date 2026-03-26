@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.example.api_receitas.features.authentication.ui.AuthenticationSignIn
+import com.example.api_receitas.features.create.ui.createRecipe
 import com.example.api_receitas.ui.theme.APIReceitasTheme
 
 class MainActivity : ComponentActivity() {
@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             APIReceitasTheme {
                 Surface (modifier = Modifier.fillMaxSize()){
-                    AuthenticationSignIn()
+                    createRecipe()
                 }
             }
         }
