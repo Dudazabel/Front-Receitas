@@ -14,7 +14,8 @@ interface ReceitaApiService {
 
     @GET("receita/{id}")
     suspend fun buscarReceitaPorId(@Path("id") id: Long): Response<ReceitaResposta>
-
+    @GET("receita")
+    suspend fun ListarTodasAsReceitas(): Response<List<ReceitaResposta>>
     object RetrofitClient {
         private const val BASE_URL = "https://api-receitas-pb3e.onrender.com/"
 

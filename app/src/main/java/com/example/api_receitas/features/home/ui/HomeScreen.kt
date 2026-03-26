@@ -23,6 +23,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -33,6 +34,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,11 +51,18 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.api_receitas.R
+import com.example.api_receitas.data.model.receita.ReceitaResposta
+import com.example.api_receitas.features.authentication.viewmodel.AuthViewModel
+import com.example.api_receitas.features.details.viewmodel.ReceitaViewModel
 import com.example.api_receitas.ui.theme.AzulClaro
 import com.example.api_receitas.ui.theme.Laranja
 
 @Composable
-fun HomeScreen(){
+fun HomeScreen(viewModel: ReceitaViewModel = androidx.lifecycle.viewmodel.compose.viewModel()){
+
+    LaunchedEffect(Unit) {
+        viewModel.buscarTodasAsReceitas()
+    }
     Scaffold(
         topBar = { Header() },
         bottomBar = { BottomNavBar() }
@@ -63,32 +72,32 @@ fun HomeScreen(){
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            Conteudo()
+            if(viewModel.EstaLogado) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }else{
+                Conteudo(receitas = viewModel.listaReceitas)
+            }
         }
     }
 }
 
 @Composable
-fun Conteudo(){
-    val receitasDaApi = listOf("")
-
+fun Conteudo(receitas: List<ReceitaResposta>){
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-        }
+        item { Spacer(modifier = Modifier.height(16.dp)) }
         item{ SearchSection() }
         item{ CategoriesSection() }
+        item{ RecipeFilter() }
 
-        item{
-            RecipeFilter()
-        }
-        items(receitasDaApi){ receita ->
-            RecipeCard()
+        items(receitas){ receita ->
+            RecipeCard(receita = receita)
         }
         item{ Spacer(modifier = Modifier.height(80.dp))}
     }
@@ -226,7 +235,7 @@ fun CategoriesSection(){
 }
 
 @Composable
-fun RecipeCard(){
+fun RecipeCard(receita: ReceitaResposta){
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -240,17 +249,19 @@ fun RecipeCard(){
                 .clip(RoundedCornerShape(16.dp))
                 .background(Color.LightGray)
         ) {
-
         }
         Spacer(modifier = Modifier.height(12.dp))
+
         Text(
-            text = "Titulo da receita",
+            text = receita.nome,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(horizontal = 8.dp)
         )
+
+        val resumoIngredientes = receita.ingredientes.take(3).joinToString(" - ") { it.nome }
         Text(
-            text = "Ingrediente - Ingrediente - Ingredente",
+            text = resumoIngredientes,
             color = Color.Gray,
             fontSize = 14.sp,
             modifier = Modifier.padding(horizontal = 8.dp)
@@ -266,7 +277,7 @@ fun RecipeCard(){
                 modifier = Modifier.size(16.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
-            Text("30m", fontWeight = FontWeight.Bold)
+            Text("${receita.tempoPreparo.toInt()}m", fontWeight = FontWeight.Bold)
 
             Spacer(modifier = Modifier.width(16.dp))
 
@@ -276,7 +287,7 @@ fun RecipeCard(){
                 modifier =  Modifier.size(17.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
-            Text("4", fontWeight = FontWeight.Bold)
+            Text("${receita.porcoes.toInt()}", fontWeight = FontWeight.Bold)
         }
     }
 }
