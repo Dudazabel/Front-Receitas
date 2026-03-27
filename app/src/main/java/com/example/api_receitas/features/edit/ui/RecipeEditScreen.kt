@@ -51,7 +51,8 @@ import com.example.api_receitas.ui.theme.Laranja
 fun RecipeEditScreen(
     recipeId: Long,
     onBackClick: () -> Unit,
-    onSaveSuccess: () -> Unit
+    onSaveSuccess: () -> Unit,
+    onDeleteSucess: () -> Unit
 ){
     var titulo by rememberSaveable {
         mutableStateOf("Título da receita")
@@ -79,7 +80,8 @@ fun RecipeEditScreen(
         item {
             TopImage(
                 onBackClick = onBackClick,
-                onSaveClick = { onSaveSuccess() }
+                onSaveClick = { onSaveSuccess() },
+                onDeleteClick = { onDeleteSucess() }
             )
         }
         item {
@@ -106,7 +108,8 @@ fun RecipeEditScreen(
 @Composable
 fun TopImage(
     onBackClick: () -> Unit,
-    onSaveClick: () -> Unit
+    onSaveClick: () -> Unit,
+    onDeleteClick: () -> Unit
 ){
     Box(
         modifier = Modifier
@@ -132,17 +135,32 @@ fun TopImage(
                     contentDescription = "Voltar"
                 )
             }
-            IconButton(
-                onClick = onSaveClick,
-                modifier = Modifier
-                    .background(Color.White, CircleShape)
-                    .size(48.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = "Salvar alterações",
-                    tint = Color(0xFF4CAF50)
-                )
+            Column {
+                IconButton(
+                    onClick = onSaveClick,
+                    modifier = Modifier
+                        .background(Color.White, CircleShape)
+                        .size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Salvar alterações",
+                        tint = Color(0xFF4CAF50)
+                    )
+                }
+                Spacer(modifier = Modifier.height(15.dp))
+                IconButton(
+                    onClick = onDeleteClick,
+                    modifier = Modifier
+                        .background(Color.White, CircleShape)
+                        .size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Deletar receita",
+                        tint = Color.Red
+                    )
+                }
             }
         }
     }

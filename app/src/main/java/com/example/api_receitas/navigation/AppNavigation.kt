@@ -65,14 +65,26 @@ fun AppNavigation() {
             CreateRecipe(
                 onBackClick = { navController.popBackStack() },
                 onRecipeSaved = {
-                    navController.navigate(Screen.Confirmation.route) {
+                    navController.navigate(Screen.Confirmation.createRoute("create")) {
                         popUpTo(Screen.Create.route) { inclusive = true }
                     }
                 }
             )
         }
-        composable(Screen.Confirmation.route){
+        composable(
+            route = Screen.Confirmation.route,
+            arguments = listOf(navArgument("acao"){
+                type = NavType.StringType
+            })
+        ) { backStackEntry ->
+            val acao = backStackEntry.arguments?.getString("acao") ?: "create"
+            val mensagemExibida = if (acao == "delete") {
+                "Receita Excluída!"
+            } else {
+                "Receita Criada!"
+            }
             TelaConfimacao(
+                mensagem = mensagemExibida,
                 onOkClick = {
                     navController.navigate(Screen.Home.route){
                         popUpTo(Screen.Confirmation.route) { inclusive = true }
@@ -105,7 +117,12 @@ fun AppNavigation() {
             RecipeEditScreen(
                 recipeId = recipeId,
                 onBackClick = { navController.popBackStack() },
-                onSaveSuccess = { navController.popBackStack() }
+                onSaveSuccess = { navController.popBackStack() },
+                onDeleteSucess = {
+                    navController.navigate(Screen.Confirmation.createRoute("delete")) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                    }
+                }
             )
         }
     }

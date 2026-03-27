@@ -25,8 +25,10 @@ import com.example.api_receitas.ui.theme.AzulFundo
 import com.example.api_receitas.ui.theme.Laranja
 
 @Composable
-fun TelaConfimacao(onOkClick: () -> Unit){
-
+fun TelaConfimacao(
+    mensagem: String,
+    onOkClick: () -> Unit
+){
     Column (modifier = Modifier.padding(16.dp).fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center){
@@ -41,7 +43,7 @@ fun TelaConfimacao(onOkClick: () -> Unit){
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        Text(text = "Receita Criada!",
+        Text(text = mensagem,
             fontSize = 22.sp,
             color = AzulFundo)
 
@@ -51,14 +53,14 @@ fun TelaConfimacao(onOkClick: () -> Unit){
     Box(
         modifier = Modifier.fillMaxSize()
     ){
-        Button(onClick = {},
+        Button(onClick = { onOkClick() },
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
                 .padding(60.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Laranja)) {
 
-            Text(text = "OK",
+            Text(text = "Continuar",
                 fontSize = 17.sp,
                 color = Color.White)
         }
