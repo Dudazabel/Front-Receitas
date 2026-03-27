@@ -27,6 +27,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,7 +48,6 @@ data class Passos(
 
 @Composable
 fun CreateRecipe(
-    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     onRecipeSaved: () -> Unit
 ) {
@@ -56,8 +56,8 @@ fun CreateRecipe(
     var descricaoReceita by remember { mutableStateOf("") }
     var tempoPreparoString by remember { mutableStateOf("") }
     var porcoesString by remember { mutableStateOf("") }
-    var tempoPreparo by remember { mutableStateOf(0.0) }
-    var porcoes by remember { mutableStateOf(0.0) }
+    var tempoPreparo by remember { mutableDoubleStateOf(0.0) }
+    var porcoes by remember { mutableDoubleStateOf(0.0) }
     var nomeIngredientes by remember { mutableStateOf("") }
     var quantidade by remember { mutableStateOf("") }
     val ingredientes = remember { mutableStateListOf<Ingredientes>() }

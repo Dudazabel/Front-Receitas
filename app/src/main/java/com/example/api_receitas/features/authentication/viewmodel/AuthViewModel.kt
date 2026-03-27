@@ -12,13 +12,13 @@ import java.lang.Exception
 
 class AuthViewModel: ViewModel() {
 
-    var EstaLogado by mutableStateOf(false)
+    var estaLogado by mutableStateOf(false)
     var mensagemFeedback by mutableStateOf("")
 
 
     fun cadastrarUsuario(nome: String, email: String, senha: String, onSuccess: () -> Unit){
         viewModelScope.launch {
-            EstaLogado = true
+            estaLogado = true
             mensagemFeedback = ""
             try {
                 val novoUsuario = UsuarioRequisicao(nome = nome, email = email , senha = senha)
@@ -28,7 +28,7 @@ class AuthViewModel: ViewModel() {
             }catch (e: Exception){
                 mensagemFeedback = "Houve algum erro ao cadastrar tente novamente"
             }finally {
-                EstaLogado = false
+                estaLogado = false
             }
         }
     }
@@ -36,19 +36,17 @@ class AuthViewModel: ViewModel() {
 
     fun fazerLogin(email: String, senha: String, onSuccess: () -> Unit) {
         viewModelScope.launch {
-            EstaLogado = true
+            estaLogado = true
             mensagemFeedback = ""
             try {
-                val usuario = UsuarioApiService.RetrofitClient.apiService.buscarUsuarioPorEmail(email)
+                UsuarioApiService.RetrofitClient.apiService.buscarUsuarioPorEmail(email)
 
-                if (usuario != null) {
-                    mensagemFeedback = "Login realizado com sucesso!"
-                    onSuccess()
-                }
+                mensagemFeedback = "Login realizado com sucesso!"
+                onSuccess()
             } catch (e: Exception) {
                 mensagemFeedback = "Usuário não encontrado"
             } finally {
-                EstaLogado = false
+                estaLogado = false
             }
         }
     }

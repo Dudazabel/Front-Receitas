@@ -12,12 +12,12 @@ import kotlinx.coroutines.launch
 class ReceitaViewModel: ViewModel() {
 
         var receita by mutableStateOf<ReceitaResposta?>(null)
-        var EstaLogado by mutableStateOf(true)
+        var estaLogado by mutableStateOf(true)
         var mensagemFeedback by mutableStateOf("")
         var listaReceitas by mutableStateOf<List<ReceitaResposta>>(emptyList())
     fun buscaReceitaPorId(id: Long) {
         viewModelScope.launch {
-            EstaLogado = true
+            estaLogado = true
             try {
                 val resposta = ReceitaApiService.RetrofitClient.apiService.buscarReceitaPorId(id)
 
@@ -30,13 +30,13 @@ class ReceitaViewModel: ViewModel() {
             } catch (e: Exception) {
                 mensagemFeedback = "Ocorreu uma falha no carregamento: ${e.message}"
             } finally {
-                EstaLogado = false
+                estaLogado = false
             }
         }
     }
     fun buscarTodasAsReceitas(){
         viewModelScope.launch {
-            EstaLogado = true
+            estaLogado = true
             try{
                 val resposta = ReceitaApiService.RetrofitClient.apiService.ListarTodasAsReceitas()
                 if(resposta.isSuccessful){
@@ -49,7 +49,7 @@ class ReceitaViewModel: ViewModel() {
                 mensagemFeedback = "Nao foi possivel se conectar a api ${e.message}"
 
             }finally {
-                EstaLogado = false;
+                estaLogado = false;
             }
         }
     }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,9 +25,9 @@ import com.example.api_receitas.ui.theme.AzulFundo
 import com.example.api_receitas.ui.theme.Laranja
 
 @Composable
-fun telaConfimacao(){
+fun TelaConfimacao(onOkClick: () -> Unit){
 
-    Column (modifier = Modifier.padding(16.dp),
+    Column (modifier = Modifier.padding(16.dp).fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center){
 
@@ -40,14 +41,16 @@ fun telaConfimacao(){
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        Text(text = "Cadastro Realizado!",
+        Text(text = "Receita Criada!",
             fontSize = 22.sp,
             color = AzulFundo)
 
         Spacer(modifier = Modifier.height(15.dp))
 
     }
-    Box{
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ){
         Button(onClick = {},
             modifier = Modifier
                 .fillMaxWidth()

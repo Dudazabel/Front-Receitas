@@ -8,12 +8,13 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.api_receitas.features.authentication.ui.AuthenticationLogIn
 import com.example.api_receitas.features.authentication.ui.AuthenticationSignIn
+import com.example.api_receitas.features.confirmation.ui.TelaConfimacao
 import com.example.api_receitas.features.create.ui.CreateRecipe
 import com.example.api_receitas.features.details.ui.RecipeDetailScreen
 import com.example.api_receitas.features.edit.ui.RecipeEditScreen
 import com.example.api_receitas.features.home.ui.HomeScreen
 import com.example.api_receitas.features.home.ui.InitialScreenLogo
-import com.example.api_receitas.features.onboarding.ui.OnboardingScreen
+import com.example.api_receitas.features.home.ui.OnboardingScreen
 
 @Composable
 fun AppNavigation() {
@@ -63,7 +64,20 @@ fun AppNavigation() {
         composable(Screen.Create.route) {
             CreateRecipe(
                 onBackClick = { navController.popBackStack() },
-                onRecipeSaved = { navController.popBackStack() }
+                onRecipeSaved = {
+                    navController.navigate(Screen.Confirmation.route) {
+                        popUpTo(Screen.Create.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable(Screen.Confirmation.route){
+            TelaConfimacao(
+                onOkClick = {
+                    navController.navigate(Screen.Home.route){
+                        popUpTo(Screen.Confirmation.route) { inclusive = true }
+                    }
+                }
             )
         }
         composable(
