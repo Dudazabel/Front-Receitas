@@ -58,6 +58,7 @@ import com.example.api_receitas.ui.theme.Laranja
 
 @Composable
 fun HomeScreen(
+    nomeUsuario: String,
     viewModel: ReceitaViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     onRecipeClick: (Long) -> Unit,
     onAddRecipeClick: () -> Unit
@@ -66,7 +67,7 @@ fun HomeScreen(
         viewModel.buscarTodasAsReceitas()
     }
     Scaffold(
-        topBar = { Header() },
+        topBar = { Header(nome = nomeUsuario) },
         bottomBar = { BottomNavBar(onAddClick = onAddRecipeClick) }
     ) { paddingValues ->
         Column(
@@ -171,7 +172,7 @@ fun BottomNavBar(
 }
 
 @Composable
-fun Header(){
+fun Header(nome: String = "Usuário"){
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -181,7 +182,7 @@ fun Header(){
     ) {
         Text(
             text = buildAnnotatedString {
-                append("Olá Vinicius, ")
+                append("Olá $nome, ")
                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)){
                     append("Boa Tarde!")
                 }

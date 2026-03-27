@@ -39,7 +39,9 @@ fun AppNavigation() {
         }
         composable(Screen.Login.route) {
             AuthenticationLogIn(
-                onNavigateToHome = { navController.navigate(Screen.Home.route) },
+                onNavigateToHome = { nomeUsuario ->
+                    navController.navigate("${Screen.Home.route}/$nomeUsuario")
+                },
                 onNavigateToSignUp = { navController.navigate(Screen.SingIn.route) }
             )
         }
@@ -52,14 +54,24 @@ fun AppNavigation() {
                 }
             )
         }
-        composable(Screen.Home.route) {
+
+        composable(
+            route = "${Screen.Home.route}/{nomeUsuario}",
+            arguments = listOf(navArgument("nomeUsuario") {
+                type = NavType.StringType
+            })
+        ) { backStackEntry ->
+            val nomeUsuarioRecebido = backStackEntry.arguments?.getString("nomeUsuario") ?: "Usuário"
+
             HomeScreen(
+                nomeUsuario = nomeUsuarioRecebido,
                 onRecipeClick = { recipeId ->
                     navController.navigate(Screen.Details.createRoute(recipeId))
                 },
                 onAddRecipeClick = { navController.navigate(Screen.Create.route) }
             )
         }
+
         composable(Screen.Create.route) {
             CreateRecipe(
                 onBackClick = { navController.popBackStack() },

@@ -37,7 +37,7 @@ import com.example.api_receitas.ui.theme.Laranja
 fun AuthenticationLogIn(
     modifier: Modifier = Modifier,
     viewModel: AuthViewModel = AuthViewModel(),
-    onNavigateToHome: () -> Unit,
+    onNavigateToHome: (String) -> Unit,
     onNavigateToSignUp: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -110,7 +110,7 @@ fun AuthenticationLogIn(
                     onClick = {
                         if (email.isNotBlank() && senha.isNotBlank()) {
                             viewModel.fazerLogin(email, senha) {
-                                onNavigateToHome()
+                                onNavigateToHome(viewModel.nomeUsuarioLogado)
                             }
                         } else {
                             viewModel.mensagemFeedback = "Preencha o e-mail e a senha!"

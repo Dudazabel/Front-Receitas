@@ -14,7 +14,7 @@ class AuthViewModel: ViewModel() {
 
     var EstaLogado by mutableStateOf(false)
     var mensagemFeedback by mutableStateOf("")
-
+    var nomeUsuarioLogado by mutableStateOf("")
 
     fun cadastrarUsuario(nome: String, email: String, senha: String, onSuccess: () -> Unit){
         viewModelScope.launch {
@@ -42,6 +42,7 @@ class AuthViewModel: ViewModel() {
                 val usuario = UsuarioApiService.RetrofitClient.apiService.buscarUsuarioPorEmail(email)
 
                 if (usuario != null) {
+                    nomeUsuarioLogado = usuario.nome
                     mensagemFeedback = "Login realizado com sucesso!"
                     onSuccess()
                 }

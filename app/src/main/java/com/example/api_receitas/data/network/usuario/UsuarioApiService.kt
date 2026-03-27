@@ -2,6 +2,7 @@ package com.example.api_receitas.data.network.usuario
 
 import com.example.api_receitas.data.model.usuario.UsuarioRequisicao
 import com.example.api_receitas.data.model.usuario.UsuarioResposta
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -15,9 +16,7 @@ interface UsuarioApiService {
     suspend fun buscarUsuarioPorEmail(@Path("email") email: String): UsuarioResposta
 
     @POST("usuario")
-    suspend fun adicionarUsuario(@Body usuario: UsuarioRequisicao): UsuarioResposta
-
-
+    suspend fun adicionarUsuario(@Body usuario: UsuarioRequisicao): Response<UsuarioResposta>
     object RetrofitClient{
         private const val BASE_URL = "https://api-receitas-pb3e.onrender.com/"
 
