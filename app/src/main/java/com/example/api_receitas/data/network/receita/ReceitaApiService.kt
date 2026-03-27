@@ -1,7 +1,6 @@
 package com.example.api_receitas.data.network.receita
 
 import com.example.api_receitas.data.model.receita.ReceitaResposta
-import com.example.api_receitas.data.network.usuario.UsuarioApiService
 import okhttp3.OkHttpClient
 import retrofit2.Response
 import retrofit2.Retrofit

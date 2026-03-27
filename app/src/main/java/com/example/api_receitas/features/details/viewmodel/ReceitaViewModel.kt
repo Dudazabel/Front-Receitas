@@ -7,9 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.api_receitas.data.model.receita.ReceitaResposta
 import com.example.api_receitas.data.network.receita.ReceitaApiService
-import com.example.api_receitas.data.network.usuario.UsuarioApiService
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
 
 class ReceitaViewModel: ViewModel() {
 

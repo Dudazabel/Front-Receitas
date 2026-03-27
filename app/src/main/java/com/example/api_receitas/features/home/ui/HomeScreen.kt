@@ -57,26 +57,34 @@ import com.example.api_receitas.ui.theme.AzulClaro
 import com.example.api_receitas.ui.theme.Laranja
 
 @Composable
-fun HomeScreen(viewModel: ReceitaViewModel = androidx.lifecycle.viewmodel.compose.viewModel()){
-
+fun HomeScreen(
+    viewModel: ReceitaViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    onRecipeClick: (Long) -> Unit,
+    onAddRecipeClick: () -> Unit
+){
     LaunchedEffect(Unit) {
         viewModel.buscarTodasAsReceitas()
     }
     Scaffold(
         topBar = { Header() },
-        bottomBar = { BottomNavBar() }
+        bottomBar = { BottomNavBar(onAddClick = onAddRecipeClick) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if(viewModel.EstaLogado) {
+            if(viewModel.EstaLogado && viewModel.listaReceitas.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             }else{
-                Conteudo(receitas = viewModel.listaReceitas, viewModel = viewModel)            }
+                Conteudo(
+                    receitas = viewModel.listaReceitas, 
+                    viewModel = viewModel,
+                    onRecipeClick = onRecipeClick
+                )
+            }
         }
     }
 }
@@ -84,7 +92,11 @@ fun HomeScreen(viewModel: ReceitaViewModel = androidx.lifecycle.viewmodel.compos
 
 
 @Composable
-fun Conteudo(receitas: List<ReceitaResposta>, viewModel: ReceitaViewModel){
+fun Conteudo(
+    receitas: List<ReceitaResposta>,
+    viewModel: ReceitaViewModel,
+    onRecipeClick: (Long) -> Unit
+){
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -97,14 +109,19 @@ fun Conteudo(receitas: List<ReceitaResposta>, viewModel: ReceitaViewModel){
         item{ RecipeFilter(viewModel = viewModel) }
 
         items(receitas){ receita ->
-            RecipeCard(receita = receita)
+            RecipeCard(
+                receita = receita,
+                onClick = { onRecipeClick(receita.id) }
+            )
         }
         item{ Spacer(modifier = Modifier.height(80.dp))}
     }
 }
 
 @Composable
-fun BottomNavBar(){
+fun BottomNavBar(
+    onAddClick: () -> Unit
+){
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -127,7 +144,7 @@ fun BottomNavBar(){
                     modifier = Modifier.size(26.dp)
                 )
             }
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = onAddClick) {
                 Box(
                     modifier = Modifier
                         .size(56.dp)
@@ -235,11 +252,15 @@ fun CategoriesSection(){
 }
 
 @Composable
-fun RecipeCard(receita: ReceitaResposta){
+fun RecipeCard(
+    receita: ReceitaResposta,
+    onClick: () -> Unit
+){
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White, RoundedCornerShape(16.dp))
+            .clickable { onClick() }
             .padding(bottom = 16.dp)
     ) {
         Box(
@@ -259,7 +280,12 @@ fun RecipeCard(receita: ReceitaResposta){
             modifier = Modifier.padding(horizontal = 8.dp)
         )
 
-        val resumoIngredientes = receita.ingredientes.take(3).joinToString(" - ") { it.nome }
+        val resumoIngredientes = if (receita.ingredientes.isNotEmpty()){
+            receita.ingredientes.take(3).joinToString(" - ") { it.nome }
+        } else {
+            "Sem ingredientes listados"
+        }
+
         Text(
             text = resumoIngredientes,
             color = Color.Gray,

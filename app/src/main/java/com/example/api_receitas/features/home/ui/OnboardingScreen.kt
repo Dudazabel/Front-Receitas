@@ -1,13 +1,11 @@
 @file:OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 package com.example.api_receitas.features.onboarding.ui
 
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -93,7 +91,7 @@ fun OnboardingScreen(
 
 
             ) {
-                Text(text = if (isLastPage) "Começar" else "Next")
+                Text(text = if (isLastPage) "Começar" else "Próximo")
             }
         }
     }

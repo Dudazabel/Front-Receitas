@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -42,9 +43,10 @@ import com.example.api_receitas.features.details.viewmodel.ReceitaViewModel
 
 @Composable
 fun RecipeDetailScreen(
-    receitaId:Long,
-    viewModel: ReceitaViewModel = ReceitaViewModel(),
-    onVoltarClick: () -> Unit
+    receitaId: Long,
+    viewModel: ReceitaViewModel = viewModel(),
+    onVoltarClick: () -> Unit,
+    onEditClick: () -> Unit
 ){
     LaunchedEffect(receitaId) {
         viewModel.buscaReceitaPorId(receitaId)
@@ -63,7 +65,12 @@ fun RecipeDetailScreen(
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
-            item { TopImage(onVoltarClick) }
+            item {
+                TopImage(
+                    onVoltarClick = onVoltarClick,
+                    onEditClick = onEditClick
+                )
+            }
             item {
                 Column(
                     modifier = Modifier.padding(horizontal = 24.dp)
@@ -81,7 +88,10 @@ fun RecipeDetailScreen(
 }
 
 @Composable
-fun TopImage(onVoltarClick: () -> Unit) {
+fun TopImage(
+    onVoltarClick: () -> Unit,
+    onEditClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -96,7 +106,7 @@ fun TopImage(onVoltarClick: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = onVoltarClick,
                 modifier = Modifier
                     .background(Color.White, CircleShape)
                     .size(48.dp)
@@ -106,7 +116,7 @@ fun TopImage(onVoltarClick: () -> Unit) {
                     contentDescription = "Voltar")
             }
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = onEditClick,
                 modifier = Modifier
                     .background(Color.White, CircleShape)
                     .size(48.dp)

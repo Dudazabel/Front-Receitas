@@ -1,7 +1,6 @@
 package com.example.api_receitas.features.create.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -47,12 +46,18 @@ data class Passos(
 )
 
 @Composable
-fun createRecipe(modifier: Modifier = Modifier) {
+fun CreateRecipe(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit,
+    onRecipeSaved: () -> Unit
+) {
 
     var nomeReceita by remember { mutableStateOf("") }
     var descricaoReceita by remember { mutableStateOf("") }
     var tempoPreparoString by remember { mutableStateOf("") }
+    var porcoesString by remember { mutableStateOf("") }
     var tempoPreparo by remember { mutableStateOf(0.0) }
+    var porcoes by remember { mutableStateOf(0.0) }
     var nomeIngredientes by remember { mutableStateOf("") }
     var quantidade by remember { mutableStateOf("") }
     val ingredientes = remember { mutableStateListOf<Ingredientes>() }
@@ -65,7 +70,7 @@ fun createRecipe(modifier: Modifier = Modifier) {
 
         item {
             Row (verticalAlignment = Alignment.CenterVertically){
-                IconButton(onClick = { },
+                IconButton(onClick = { onBackClick() },
                     modifier = Modifier
                         .background(Cinza, CircleShape)
                         .size(48.dp)
@@ -109,12 +114,25 @@ fun createRecipe(modifier: Modifier = Modifier) {
         item {
             Spacer(modifier = Modifier.height(20.dp))
 
-            Text(text = "Tempo de preparo",
+            Text(text = "Tempo de preparo (min)",
                 fontSize = 17.sp)
             OutlinedTextField(
                 value = tempoPreparoString,
                 onValueChange = {tempoPreparoString = it
                     tempoPreparo = it.toDoubleOrNull() ?: 0.0},
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text(text = "Porções",
+                fontSize = 17.sp)
+            OutlinedTextField(
+                value = porcoesString,
+                onValueChange = {porcoesString = it
+                    porcoes = it.toDoubleOrNull() ?: 0.0},
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -227,7 +245,7 @@ fun createRecipe(modifier: Modifier = Modifier) {
         
         item {
             Spacer(modifier = Modifier.height(40.dp))
-            Button(onClick = { },
+            Button(onClick = { onRecipeSaved() },
                 colors = ButtonDefaults.textButtonColors(containerColor = Laranja),
                 modifier = Modifier.fillMaxWidth()) {
                 Text(text = "Criar Receita",
