@@ -57,7 +57,7 @@ fun RecipeEditScreen(
         mutableStateOf("Título da receita")
     }
     var descricao by rememberSaveable {
-        mutableStateOf("Descrição da receita .................................................................................")
+        mutableStateOf("Descrição da receita")
     }
     var tempo by rememberSaveable {
         mutableStateOf("30")

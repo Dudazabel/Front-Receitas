@@ -24,7 +24,10 @@ interface ReceitaApiService {
         @Query("tempoMin") min: Double,
         @Query("tempoMax") max: Double
     ): Response<List<ReceitaResposta>>
-
+    @GET("receita/ingrediente/{ingrediente}")
+    suspend fun buscarPorIngrediente(@Path("ingrediente") ingrediente: String): Response<List<ReceitaResposta>>
+    @GET("receita/nome/{nome}")
+    suspend fun buscarPorNome(@Path("nome") nome: String): Response<List<ReceitaResposta>>
     @GET("receita/porcao/filtro")
     suspend fun FiltrarPorPorcao(
         @Query("min") min: Double,

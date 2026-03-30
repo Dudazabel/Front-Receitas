@@ -11,6 +11,7 @@ import com.example.api_receitas.data.model.receita.requisicao.ReceitaRequisicao
 import com.example.api_receitas.data.model.receita.resposta.ReceitaResposta
 import com.example.api_receitas.data.network.receita.ReceitaApiService
 import com.example.api_receitas.data.network.usuario.UsuarioApiService
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class ReceitaViewModel: ViewModel() {
@@ -20,6 +21,10 @@ class ReceitaViewModel: ViewModel() {
         var mensagemFeedback by mutableStateOf("")
         var listaReceitas by mutableStateOf<List<ReceitaResposta>>(emptyList())
         var filtroAtual by mutableStateOf("Todos")
+        var searchJob: Job? = null
+
+
+
     fun buscaReceitaPorId(id: Long) {
         viewModelScope.launch {
             EstaLogado = true
@@ -58,7 +63,40 @@ class ReceitaViewModel: ViewModel() {
             }
         }
     }
+    fun realizarBuscaGeral(texto: String) {
+        if (texto.isBlank()) {
+            buscarTodasAsReceitas()
+            return
+        }
 
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            kotlinx.coroutines.delay(500)
+
+            try {
+                val resNome = ReceitaApiService.RetrofitClient.apiService.buscarPorNome(texto)
+                val resIngrediente = ReceitaApiService.RetrofitClient.apiService.buscarPorIngrediente(texto)
+
+                val listaFinal = mutableListOf<ReceitaResposta>()
+
+                if (resNome.isSuccessful) {
+                    resNome.body()?.let { listaFinal.addAll(it) }
+                }
+
+                if (resIngrediente.isSuccessful) {
+                    resIngrediente.body()?.let { listaIng ->
+                        val idsExistentes = listaFinal.map { it.id }.toSet()
+                        listaFinal.addAll(listaIng.filter { it.id !in idsExistentes })
+                    }
+                }
+
+                listaReceitas = listaFinal
+
+            } catch (e: Exception) {
+                mensagemFeedback = "Erro na busca: ${e.message}"
+            }
+        }
+    }
     fun filtrarReceitasPorTempo(min:Double, max:Double){
         viewModelScope.launch {
             EstaLogado = true
