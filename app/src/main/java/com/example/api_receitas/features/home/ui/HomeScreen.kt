@@ -138,10 +138,12 @@ fun Conteudo(
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         item { Spacer(modifier = Modifier.height(16.dp)) }
-        item{ SearchSection(
-          SearchSection(viewModel = viewModel),
-          focusRequester = focusRequester
-        )}
+        item{
+          SearchSection(
+              viewModel = viewModel,
+              focusRequester = focusRequester
+          )
+        }
         item{ CategoriesSection() }
         item{ RecipeFilter(viewModel = viewModel) }
 
