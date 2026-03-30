@@ -1,5 +1,6 @@
 package com.example.api_receitas.data.network.usuario
 
+import com.example.api_receitas.data.model.login.LoginRequisicao
 import com.example.api_receitas.data.model.usuario.UsuarioRequisicao
 import com.example.api_receitas.data.model.usuario.UsuarioResposta
 import retrofit2.Response
@@ -11,9 +12,6 @@ import retrofit2.http.Body
 import retrofit2.http.Path
 
 interface UsuarioApiService {
-
-    @GET("usuario/{email}")
-    suspend fun buscarUsuarioPorEmail(@Path("email") email: String): UsuarioResposta
 
     @POST("usuario")
     suspend fun adicionarUsuario(@Body usuario: UsuarioRequisicao): Response<UsuarioResposta>
@@ -30,4 +28,9 @@ interface UsuarioApiService {
                 .create(UsuarioApiService::class.java)
         }
     }
+
+    @POST("/usuario/login")
+    suspend fun login(
+        @Body requisicao: LoginRequisicao
+    ): UsuarioResposta
 }

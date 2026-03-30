@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.api_receitas.data.model.login.LoginRequisicao
 import com.example.api_receitas.data.model.usuario.UsuarioRequisicao
 import com.example.api_receitas.data.network.usuario.UsuarioApiService
 import kotlinx.coroutines.launch
@@ -39,15 +40,15 @@ class AuthViewModel: ViewModel() {
             estaLogado = true
             mensagemFeedback = ""
             try {
-                val usuarioRetornado = UsuarioApiService.RetrofitClient.apiService.buscarUsuarioPorEmail(email)
+                val resposta = UsuarioApiService.RetrofitClient.apiService.login(LoginRequisicao(email,senha))
 
-                nomeUsuarioLogado = usuarioRetornado.nome
-
+                nomeUsuarioLogado = resposta.nome
                 mensagemFeedback = "Login realizado com sucesso!"
                 onSuccess()
+
             } catch (e: Exception) {
-                e.printStackTrace()
-                mensagemFeedback = "Usuário não encontrado"
+                mensagemFeedback = "Email ou senha inválidos"
+
             } finally {
                 estaLogado = false
             }
