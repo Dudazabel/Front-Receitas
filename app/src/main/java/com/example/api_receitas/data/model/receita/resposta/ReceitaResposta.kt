@@ -1,5 +1,7 @@
-package com.example.api_receitas.data.model.receita
+package com.example.api_receitas.data.model.receita.resposta
 
+import com.example.api_receitas.data.model.receita.resposta.IngredienteResposta
+import com.example.api_receitas.data.model.receita.resposta.PassoResposta
 import com.google.gson.annotations.SerializedName
 
 data class ReceitaResposta(val id: Long,

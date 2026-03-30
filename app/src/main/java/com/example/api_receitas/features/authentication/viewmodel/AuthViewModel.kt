@@ -14,7 +14,7 @@ class AuthViewModel: ViewModel() {
 
     var estaLogado by mutableStateOf(false)
     var mensagemFeedback by mutableStateOf("")
-
+    var nomeUsuarioLogado by mutableStateOf("")
 
     fun cadastrarUsuario(nome: String, email: String, senha: String, onSuccess: () -> Unit){
         viewModelScope.launch {

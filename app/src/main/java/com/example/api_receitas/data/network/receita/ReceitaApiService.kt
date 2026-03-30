@@ -1,15 +1,19 @@
 package com.example.api_receitas.data.network.receita
 
-import com.example.api_receitas.data.model.receita.ReceitaResposta
+import com.example.api_receitas.data.model.receita.requisicao.ReceitaRequisicao
+import com.example.api_receitas.data.model.receita.resposta.ReceitaResposta
 import okhttp3.OkHttpClient
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
 
 interface ReceitaApiService {
@@ -19,6 +23,19 @@ interface ReceitaApiService {
 
     @GET("receita")
     suspend fun ListarTodasAsReceitas(): Response<List<ReceitaResposta>>
+    @GET("receita/filtro/tempo")
+    suspend fun filtrarReceitasPorTempo(
+        @Query("tempoMin") min: Double,
+        @Query("tempoMax") max: Double
+    ): Response<List<ReceitaResposta>>
+
+    @GET("receita/porcao/filtro")
+    suspend fun FiltrarPorPorcao(
+        @Query("min") min: Double,
+        @Query("max") max: Double):Response<List<ReceitaResposta>>
+
+    @POST("/receita")
+    suspend fun AdicionarReceita(@Body receita: ReceitaRequisicao):Response<ReceitaResposta>
 
     @PUT("receita/{id}")
     suspend fun AtualizarReceita(
@@ -29,7 +46,7 @@ interface ReceitaApiService {
     suspend fun DeletarReceita(@Path("id") id: Long): Response<Unit>
 
     object RetrofitClient {
-        private const val BASE_URL = "https://api-receitas-pb3e.onrender.com/"
+            private const val BASE_URL = "https://api-receitas-pb3e.onrender.com/"
 
 
         private val okHttpClient = OkHttpClient.Builder()
