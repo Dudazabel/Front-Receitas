@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,9 +25,11 @@ import com.example.api_receitas.ui.theme.AzulFundo
 import com.example.api_receitas.ui.theme.Laranja
 
 @Composable
-fun telaConfimacao(){
-
-    Column (modifier = Modifier.padding(16.dp),
+fun TelaConfimacao(
+    mensagem: String,
+    onOkClick: () -> Unit
+){
+    Column (modifier = Modifier.padding(16.dp).fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center){
 
@@ -40,22 +43,24 @@ fun telaConfimacao(){
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        Text(text = "Cadastro Realizado!",
+        Text(text = mensagem,
             fontSize = 22.sp,
             color = AzulFundo)
 
         Spacer(modifier = Modifier.height(15.dp))
 
     }
-    Box{
-        Button(onClick = {},
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ){
+        Button(onClick = { onOkClick() },
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
                 .padding(60.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Laranja)) {
 
-            Text(text = "OK",
+            Text(text = "Continuar",
                 fontSize = 17.sp,
                 color = Color.White)
         }

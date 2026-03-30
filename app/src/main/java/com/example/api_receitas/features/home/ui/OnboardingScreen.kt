@@ -1,7 +1,8 @@
 @file:OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
-package com.example.api_receitas.features.onboarding.ui
+package com.example.api_receitas.features.home.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -16,16 +17,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.api_receitas.R
+import com.example.api_receitas.ui.theme.AzulClaro
 import com.example.api_receitas.ui.theme.Laranja
 import kotlinx.coroutines.launch
 
 data class OnboardingPage(
     val image: Int,
     val title: String,
-    val description: String
+    val description: String,
+    val imageHeight: Dp = 250.dp,
+    val imageFraction: Float = 0.8f
 )
 
 @Composable
@@ -34,26 +39,32 @@ fun OnboardingScreen(
 ) {
     val pages = listOf(
         OnboardingPage(
-            image = R.drawable.cozinhando,
+            image = R.drawable.livro,
             title = "Cadastre suas receitas",
             description = "Organize suas criações culinárias em um só lugar de forma rápida e fácil."
         ),
         OnboardingPage(
-            image = R.drawable.mexendo,
+            image = R.drawable.vo,
             title = "Consulte sempre que precisar",
-            description = "Tenha seus ingredientes e modo de preparo na palma da mão, onde quer que esteja."
+            description = "Tenha seus ingredientes e modo de preparo na palma da mão, onde quer que esteja.",
+            imageHeight = 320.dp,
+            imageFraction = 0.9f
         ),
         OnboardingPage(
-            image = R.drawable.cortando,
+            image = R.drawable.comida,
             title = "Cozinhe no seu tempo",
-            description = "Está com pressa? Filtre as receitas pelo tempo de preparação e escolha a mais rápida."
+            description = "Está com pressa? Filtre as receitas pelo tempo de preparação e escolha a mais rápida.",
+            imageHeight = 300.dp,
+            imageFraction = 0.7f
         )
     )
 
     val pagerState = rememberPagerState(pageCount = { pages.size })
     val coroutineScope = rememberCoroutineScope()
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
 
         HorizontalPager(
             state = pagerState,
@@ -108,8 +119,8 @@ fun PagerScreen(onBoardingPage: OnboardingPage) {
             painter = painterResource(id = onBoardingPage.image),
             contentDescription = "Imagem Onboarding",
             modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .height(250.dp)
+                .fillMaxWidth(onBoardingPage.imageFraction)
+                .height(onBoardingPage.imageHeight)
         )
         Spacer(modifier = Modifier.height(32.dp))
         Text(

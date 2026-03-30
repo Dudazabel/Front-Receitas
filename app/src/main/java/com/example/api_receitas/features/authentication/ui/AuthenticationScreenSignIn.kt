@@ -33,7 +33,6 @@ import com.example.api_receitas.ui.theme.Laranja
 
 @Composable
 fun AuthenticationSignIn(
-    modifier: Modifier = Modifier,
     viewModel: AuthViewModel = AuthViewModel(),
     onNavigateToLogin: () -> Unit
 ) {
@@ -76,7 +75,7 @@ fun AuthenticationSignIn(
                 var nome by remember { mutableStateOf("") }
                 var email by remember { mutableStateOf("") }
                 var senha by remember { mutableStateOf("") }
-                var Confirmarsenha by remember { mutableStateOf("") }
+                var confirmarsenha by remember { mutableStateOf("") }
 
                 OutlinedTextField(
                     value = nome,
@@ -104,8 +103,8 @@ fun AuthenticationSignIn(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 OutlinedTextField(
-                    value = Confirmarsenha,
-                    onValueChange = { Confirmarsenha = it },
+                    value = confirmarsenha,
+                    onValueChange = { confirmarsenha = it },
                     label = { Text("Confirme a sua senha: ") },
                     visualTransformation = PasswordVisualTransformation()
                 )
@@ -125,7 +124,7 @@ fun AuthenticationSignIn(
 
                 Button(
                     onClick = {
-                        if (senha == Confirmarsenha && senha.isNotBlank()) {
+                        if (senha == confirmarsenha && senha.isNotBlank()) {
                             viewModel.cadastrarUsuario(nome, email, senha) {
                                 onNavigateToLogin()
                             }
@@ -135,10 +134,10 @@ fun AuthenticationSignIn(
                     },
                     modifier = Modifier.width(150.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Laranja),
-                    enabled = !viewModel.EstaLogado
+                    enabled = !viewModel.estaLogado
                 ) {
                     Text(
-                        text = if (viewModel.EstaLogado) "Aguarde" else "Sign In",
+                        text = if (viewModel.estaLogado) "Aguarde" else "Sign In",
                         fontSize = 16.sp
                     )
                 }

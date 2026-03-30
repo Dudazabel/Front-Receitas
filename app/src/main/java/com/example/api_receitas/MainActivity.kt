@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.api_receitas.navigation.AppNavigation
 
-
 import com.example.api_receitas.ui.theme.APIReceitasTheme
 
 class MainActivity : ComponentActivity() {

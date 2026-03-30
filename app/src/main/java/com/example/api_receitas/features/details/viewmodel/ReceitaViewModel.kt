@@ -17,18 +17,18 @@ import kotlinx.coroutines.launch
 
 class ReceitaViewModel: ViewModel() {
 
-        var receita by mutableStateOf<ReceitaResposta?>(null)
-        var EstaLogado by mutableStateOf(true)
-        var mensagemFeedback by mutableStateOf("")
-        var listaReceitas by mutableStateOf<List<ReceitaResposta>>(emptyList())
-        var filtroAtual by mutableStateOf("Todos")
-        var searchJob: Job? = null
-        var ListaDeIngrediente by mutableStateOf<List<String>>(emptyList())
-        var ingredienteSelecionado by mutableStateOf("Todos")
+    var receita by mutableStateOf<ReceitaResposta?>(null)
+    var carregando by mutableStateOf(false)
+    var mensagemFeedback by mutableStateOf("")
+    var listaReceitas by mutableStateOf<List<ReceitaResposta>>(emptyList())
+    var filtroAtual by mutableStateOf("Todos")
+    var searchJob: Job? = null
+    var ListaDeIngrediente by mutableStateOf<List<String>>(emptyList())
+    var ingredienteSelecionado by mutableStateOf("Todos")
 
     fun buscaReceitaPorId(id: Long) {
         viewModelScope.launch {
-            EstaLogado = true
+            carregando = true
             try {
                 val resposta = ReceitaApiService.RetrofitClient.apiService.buscarReceitaPorId(id)
 
@@ -41,42 +41,27 @@ class ReceitaViewModel: ViewModel() {
             } catch (e: Exception) {
                 mensagemFeedback = "Ocorreu uma falha no carregamento: ${e.message}"
             } finally {
-                EstaLogado = false
+                carregando = false
             }
         }
     }
-     fun buscarTodasAsReceitas(){
-       viewModelScope.launch {
-           try {
-               val resposta = ReceitaApiService.RetrofitClient.apiService.ListarTodasAsReceitas()
-               if (resposta.isSuccessful) {
-                   listaReceitas  = resposta.body() ?: emptyList()
-               } else if (resposta.code() == 204) {
-                   listaReceitas = emptyList()
-               } else {
-                   mensagemFeedback = "Erro ao carregar categorias: ${resposta.code()}"
-               }
-           } catch (e: Exception) {
-               mensagemFeedback = "Falha ao carregar ingredientes: ${e.message}"
 
-           }
-       }
-
-    }
-    fun buscarTodosOsIngredientes() {
+    fun buscarTodasAsReceitas(){
         viewModelScope.launch {
-            try {
-                val resposta = ReceitaApiService.RetrofitClient.apiService.BuscarTodosIngrediente()
-
-                if (resposta.isSuccessful) {
-                    ListaDeIngrediente = resposta.body() ?: emptyList()
-                } else if (resposta.code() == 204) {
-                    ListaDeIngrediente = emptyList()
-                } else {
-                    mensagemFeedback = "Erro ao carregar categorias: ${resposta.code()}"
+            carregando = true
+            try{
+                val resposta = ReceitaApiService.RetrofitClient.apiService.ListarTodasAsReceitas()
+                if(resposta.isSuccessful){
+                    listaReceitas = resposta.body() ?: emptyList()
+                }else{ 
+                    mensagemFeedback = "Não foi possível carregar a api ${resposta.code()}"
                 }
-            } catch (e: Exception) {
-                mensagemFeedback = "Falha ao carregar ingredientes: ${e.message}"
+
+            }catch (e:Exception){
+                mensagemFeedback = "Não foi possível se conectar a api ${e.message}"
+
+            }finally {
+                carregando = false
             }
         }
     }
@@ -116,7 +101,7 @@ class ReceitaViewModel: ViewModel() {
     }
     fun filtrarReceitasPorTempo(min:Double, max:Double){
         viewModelScope.launch {
-            EstaLogado = true
+            carregando = true
             try {
                 val resposta = ReceitaApiService.RetrofitClient.apiService.filtrarReceitasPorTempo(min, max)
                 if(resposta.isSuccessful){
@@ -127,13 +112,13 @@ class ReceitaViewModel: ViewModel() {
             }catch (e:Exception){
                 mensagemFeedback = "Nao foi possivel se conectar a api ${e.message}"
             }finally {
-                EstaLogado = false
+                carregando = false
             }
         }
     }
     fun filtrarPorPorcoes(min:Double, max:Double){
         viewModelScope.launch {
-            EstaLogado = true
+            carregando = true
             try {
                 val resposta = ReceitaApiService.RetrofitClient.apiService.FiltrarPorPorcao(min, max)
                 if(resposta.isSuccessful){
@@ -144,7 +129,7 @@ class ReceitaViewModel: ViewModel() {
             }catch (e:Exception){
                 mensagemFeedback = "Nao foi possivel se conectar a api ${e.message}"
             }finally {
-                EstaLogado = false
+                carregando = false
             }
         }
     }
@@ -191,5 +176,39 @@ class ReceitaViewModel: ViewModel() {
 
     }
 
+    fun atualizarReceita(id: Long, receitaAtualizada: ReceitaRequisicao, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            carregando = true
+            try {
+                val resposta = ReceitaApiService.RetrofitClient.apiService.AtualizarReceita(id, receitaAtualizada)
+                if (resposta.isSuccessful) {
+                    onSuccess()
+                } else {
+                    mensagemFeedback = "Erro ao atualizar receita: ${resposta.code()}"
+                }
+            } catch (e: Exception) {
+                mensagemFeedback = "Erro de conexão: ${e.message}"
+            } finally {
+                carregando = false
+            }
+        }
+    }
 
+    fun deletarReceita(id: Long, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            carregando = true
+            try {
+                val resposta = ReceitaApiService.RetrofitClient.apiService.DeletarReceita(id)
+                if (resposta.isSuccessful) {
+                    onSuccess()
+                } else {
+                    mensagemFeedback = "Erro ao deletar receita: ${resposta.code()}"
+                }
+            } catch (e: Exception) {
+                mensagemFeedback = "Erro de conexão: ${e.message}"
+            } finally {
+                carregando = false
+            }
+        }
+    }
 }

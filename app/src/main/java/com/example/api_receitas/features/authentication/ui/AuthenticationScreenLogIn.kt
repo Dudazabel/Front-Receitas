@@ -35,7 +35,6 @@ import com.example.api_receitas.ui.theme.Laranja
 
 @Composable
 fun AuthenticationLogIn(
-    modifier: Modifier = Modifier,
     viewModel: AuthViewModel = AuthViewModel(),
     onNavigateToHome: (String) -> Unit,
     onNavigateToSignUp: () -> Unit
@@ -118,10 +117,10 @@ fun AuthenticationLogIn(
                     },
                     modifier = Modifier.width(150.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Laranja),
-                    enabled = !viewModel.EstaLogado
+                    enabled = !viewModel.estaLogado
                 ) {
                     Text(
-                        text = if (viewModel.EstaLogado) "Aguarde..." else "Log In",
+                        text = if (viewModel.estaLogado) "Aguarde..." else "Log In",
                         fontSize = 16.sp
                     )
                 }
