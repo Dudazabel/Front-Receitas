@@ -73,6 +73,7 @@ fun HomeScreen(
 ){
     LaunchedEffect(Unit) {
         viewModel.buscarTodasAsReceitas()
+        viewModel.buscarTodosOsIngredientes()
     }
 
     val listState = rememberLazyListState()
@@ -274,7 +275,8 @@ fun SearchSection(
 }
 
 @Composable
-fun CategoriesSection(){
+fun CategoriesSection(viewModel: ReceitaViewModel) {
+    val itemSelecionado = viewModel.ingredienteSelecionado
     Column {
         SectionTitle(title = "Todos os Ingredientes", actionText = "Veja Todos")
         Spacer(modifier = Modifier.height(16.dp))
@@ -282,17 +284,43 @@ fun CategoriesSection(){
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            item{
+            item {
+
+                val ehTodos = itemSelecionado == "Todos"
+                val corDeFundoTodos = if (ehTodos) Laranja else Color(0xFFF0F0F0) // Laranja se selecionado, cinza se não
+                val corDoTextoTodos = if (ehTodos) Color.White else Color.Black
                 Row(
                     modifier = Modifier
-                        .background(Laranja, RoundedCornerShape(20.dp))
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(corDeFundoTodos)
+                        .clickable { viewModel.selecionarTodos() }
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = "Todos",
-                        fontWeight = FontWeight.Bold
-                    )
+                        fontWeight = FontWeight.Bold,
+                        color = corDoTextoTodos                    )
+                }
+            }
+
+            items(viewModel.ListaDeIngrediente) { ingrediente ->
+
+                val ehSelecionado = itemSelecionado == ingrediente
+                val corDeFundo = if (ehSelecionado) Laranja else Color(0xFFF0F0F0)
+                val corDoTexto = if (ehSelecionado) Color.White else Color.Black
+
+                Row(
+                    modifier = Modifier
+                        .clip(shape = RoundedCornerShape(20.dp))
+                        .background(corDeFundo)                        .clickable { viewModel.selecionarIngredientes(ingrediente) }
+
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = ingrediente,
+                        color = corDoTexto                    )
                 }
             }
         }

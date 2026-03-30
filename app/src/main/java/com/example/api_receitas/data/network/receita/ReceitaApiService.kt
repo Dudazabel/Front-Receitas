@@ -39,6 +39,9 @@ interface ReceitaApiService {
     @POST("/receita")
     suspend fun AdicionarReceita(@Body receita: ReceitaRequisicao):Response<ReceitaResposta>
 
+
+    @GET("ingrediente")
+    suspend fun BuscarTodosIngrediente():Response<List<String>>
     @PUT("receita/{id}")
     suspend fun AtualizarReceita(
         @Path("id") id: Long,
