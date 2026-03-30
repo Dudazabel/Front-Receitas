@@ -36,6 +36,9 @@ interface ReceitaApiService {
     @POST("/receita")
     suspend fun AdicionarReceita(@Body receita: ReceitaRequisicao):Response<ReceitaResposta>
 
+
+    @GET("ingrediente")
+    suspend fun BuscarTodosIngrediente():Response<List<String>>
     object RetrofitClient {
             private const val BASE_URL = "https://api-receitas-pb3e.onrender.com/"
 

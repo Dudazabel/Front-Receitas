@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.api_receitas.data.model.receita.requisicao.IngredienteRequisicao
 import com.example.api_receitas.data.model.receita.requisicao.PassoRequisicao
 import com.example.api_receitas.data.model.receita.requisicao.ReceitaRequisicao
@@ -22,8 +23,8 @@ class ReceitaViewModel: ViewModel() {
         var listaReceitas by mutableStateOf<List<ReceitaResposta>>(emptyList())
         var filtroAtual by mutableStateOf("Todos")
         var searchJob: Job? = null
-
-
+        var ListaDeIngrediente by mutableStateOf<List<String>>(emptyList())
+        var ingredienteSelecionado by mutableStateOf("Todos")
 
     fun buscaReceitaPorId(id: Long) {
         viewModelScope.launch {
@@ -44,26 +45,42 @@ class ReceitaViewModel: ViewModel() {
             }
         }
     }
-    fun buscarTodasAsReceitas(){
+     fun buscarTodasAsReceitas(){
+       viewModelScope.launch {
+           try {
+               val resposta = ReceitaApiService.RetrofitClient.apiService.ListarTodasAsReceitas()
+               if (resposta.isSuccessful) {
+                   listaReceitas  = resposta.body() ?: emptyList()
+               } else if (resposta.code() == 204) {
+                   listaReceitas = emptyList()
+               } else {
+                   mensagemFeedback = "Erro ao carregar categorias: ${resposta.code()}"
+               }
+           } catch (e: Exception) {
+               mensagemFeedback = "Falha ao carregar ingredientes: ${e.message}"
+
+           }
+       }
+
+    }
+    fun buscarTodosOsIngredientes() {
         viewModelScope.launch {
-            EstaLogado = true
-            try{
-                val resposta = ReceitaApiService.RetrofitClient.apiService.ListarTodasAsReceitas()
-                if(resposta.isSuccessful){
-                    listaReceitas = resposta.body() ?: emptyList()
-                }else{
-                    mensagemFeedback = "Nao foi possivel carregar a api ${resposta.code()}"
+            try {
+                val resposta = ReceitaApiService.RetrofitClient.apiService.BuscarTodosIngrediente()
+
+                if (resposta.isSuccessful) {
+                    ListaDeIngrediente = resposta.body() ?: emptyList()
+                } else if (resposta.code() == 204) {
+                    ListaDeIngrediente = emptyList()
+                } else {
+                    mensagemFeedback = "Erro ao carregar categorias: ${resposta.code()}"
                 }
-
-            }catch (e:Exception){
-                mensagemFeedback = "Nao foi possivel se conectar a api ${e.message}"
-
-            }finally {
-                EstaLogado = false;
+            } catch (e: Exception) {
+                mensagemFeedback = "Falha ao carregar ingredientes: ${e.message}"
             }
         }
     }
-    fun realizarBuscaGeral(texto: String) {
+     fun realizarBuscaGeral(texto: String) {
         if (texto.isBlank()) {
             buscarTodasAsReceitas()
             return
@@ -162,6 +179,15 @@ class ReceitaViewModel: ViewModel() {
 
 
         }
+
+    }
+    fun selecionarTodos(){
+        ingredienteSelecionado = "Todos"
+        buscarTodasAsReceitas()
+    }
+    fun selecionarIngredientes(ingredientes: String){
+        ingredienteSelecionado = ingredientes
+        realizarBuscaGeral(ingredientes)
 
     }
 
