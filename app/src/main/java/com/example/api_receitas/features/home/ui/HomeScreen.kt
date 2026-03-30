@@ -138,7 +138,10 @@ fun Conteudo(
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         item { Spacer(modifier = Modifier.height(16.dp)) }
-        item{ SearchSection(focusRequester = focusRequester) }
+        item{ SearchSection(
+          SearchSection(viewModel = viewModel),
+          focusRequester = focusRequester
+        )}
         item{ CategoriesSection() }
         item{ RecipeFilter(viewModel = viewModel) }
 
@@ -236,32 +239,32 @@ fun Header(nome: String = "Usuário"){
 }
 
 @Composable
-fun SearchSection(focusRequester: FocusRequester){
+fun SearchSection(
+  viewModel: ReceitaViewModel,
+  focusRequester: FocusRequester
+){
     var searchText by remember { mutableStateOf("")}
 
     TextField(
         value = searchText,
-        onValueChange = { searchText = it },
+        onValueChange = { novoTexto ->
+            searchText = novoTexto
+            viewModel.realizarBuscaGeral(novoTexto)
+        },
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .focusRequester(focusRequester),
         placeholder = {
-            Text("Busque pratos ou ingredientes",
-                color = Color.Gray)
+            Text("Busque pratos ou ingredientes", color = Color.Gray)
         },
         leadingIcon = {
-            Icon(
-                Icons.Default.Search,
-                contentDescription = "Busque pratos",
-                tint = Color.Gray
-            )
+            Icon(Icons.Default.Search, contentDescription = null, tint = Color.Gray)
         },
         singleLine = true,
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color(0xFFF0F0F0),
             unfocusedContainerColor = Color(0xFFF0F0F0),
-            disabledContainerColor = Color(0xFFF0F0F0),
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
         )
