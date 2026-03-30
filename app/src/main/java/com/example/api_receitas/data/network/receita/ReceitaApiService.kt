@@ -5,7 +5,10 @@ import okhttp3.OkHttpClient
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import java.util.concurrent.TimeUnit
 
@@ -13,8 +16,18 @@ interface ReceitaApiService {
 
     @GET("receita/{id}")
     suspend fun buscarReceitaPorId(@Path("id") id: Long): Response<ReceitaResposta>
+
     @GET("receita")
     suspend fun ListarTodasAsReceitas(): Response<List<ReceitaResposta>>
+
+    @PUT("receita/{id}")
+    suspend fun AtualizarReceita(
+        @Path("id") id: Long,
+        @Body receita: ReceitaResposta): Response<ReceitaResposta>
+
+    @DELETE("receita/{id}")
+    suspend fun DeletarReceita(@Path("id") id: Long): Response<Unit>
+
     object RetrofitClient {
         private const val BASE_URL = "https://api-receitas-pb3e.onrender.com/"
 

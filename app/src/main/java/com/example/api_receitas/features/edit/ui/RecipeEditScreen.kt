@@ -1,5 +1,6 @@
 package com.example.api_receitas.features.edit.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -29,6 +31,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -39,67 +42,119 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.api_receitas.R
+import com.example.api_receitas.data.model.receita.IngredienteResposta
+import com.example.api_receitas.data.model.receita.PassoResposta
+import com.example.api_receitas.data.model.receita.ReceitaResposta
+import com.example.api_receitas.features.details.viewmodel.ReceitaViewModel
 import com.example.api_receitas.ui.theme.Laranja
 
 @Composable
 fun RecipeEditScreen(
     recipeId: Long,
+    viewModel: ReceitaViewModel = viewModel(),
     onBackClick: () -> Unit,
     onSaveSuccess: () -> Unit,
     onDeleteSucess: () -> Unit
 ){
-    var titulo by rememberSaveable {
-        mutableStateOf("Título da receita")
-    }
-    var descricao by rememberSaveable {
-        mutableStateOf("Descrição da receita .................................................................................")
-    }
-    var tempo by rememberSaveable {
-        mutableStateOf("30")
-    }
-    var porcoes by rememberSaveable {
-        mutableStateOf("4")
-    }
+    val context = LocalContext.current
+    var titulo by rememberSaveable { mutableStateOf("") }
+    var descricao by rememberSaveable { mutableStateOf("") }
+    var tempo by rememberSaveable { mutableStateOf("") }
+    var porcoes by rememberSaveable { mutableStateOf("") }
 
-    val listaIngredientes = remember {
-        mutableStateListOf("Banana", "Banana","Banana","Banana","Banana")
-    }
-    val listaPassos = remember {
-        mutableStateListOf("um", "dois", "tres")
-    }
+    val listaIngredientes = remember { mutableStateListOf<IngredienteResposta>() }
+    val listaPassos = remember { mutableStateListOf<PassoResposta>() }
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        item {
-            TopImage(
-                onBackClick = onBackClick,
-                onSaveClick = { onSaveSuccess() },
-                onDeleteClick = { onDeleteSucess() }
-            )
+    LaunchedEffect(viewModel.mensagemFeedback) {
+        if(viewModel.mensagemFeedback.isNotEmpty()){
+            Toast.makeText(context, viewModel.mensagemFeedback, Toast.LENGTH_LONG).show()
+            viewModel.mensagemFeedback = ""
         }
-        item {
-            Column(
-                modifier = Modifier.padding(horizontal = 24.dp)
-            ) {
-                Spacer(modifier = Modifier.height(24.dp))
-                EditInfoSection(
-                    titulo = titulo, onTituloChange = { titulo = it },
-                    descricao = descricao, onDescricaoChange = { descricao = it },
-                    tempo = tempo, onTempoChange = { tempo = it },
-                    porcoes = porcoes, onPorcoesChange = { porcoes = it }
-                )
-                Spacer(modifier = Modifier.height(24.dp))
+    }
 
-                EditIngredientSection(listaIngredientes)
-                Spacer(modifier = Modifier.height(24.dp))
-                EditaPassoSection(listaPassos)
+    LaunchedEffect(recipeId) {
+        viewModel.buscaReceitaPorId(recipeId)
+    }
+
+    LaunchedEffect(viewModel.receita) {
+        viewModel.receita?.let { receita ->
+            titulo = receita.nome
+            descricao = receita.descricao
+            tempo = receita.tempoPreparo.toInt().toString()
+            porcoes = receita.porcoes.toInt().toString()
+            
+            listaIngredientes.clear()
+            listaIngredientes.addAll(receita.ingredientes)
+            
+            listaPassos.clear()
+            listaPassos.addAll(receita.passos)
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (viewModel.carregando && viewModel.receita == null) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center),
+                color = Laranja
+            )
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                item {
+                    TopImage(
+                        onBackClick = onBackClick,
+                        onSaveClick = {
+                            viewModel.receita?.let { receitaAtual ->
+                                val receitaAtualizada = ReceitaResposta(
+                                    id = recipeId,
+                                    nome = titulo,
+                                    descricao = descricao,
+                                    tempoPreparo = tempo.toDoubleOrNull() ?: 0.0,
+                                    porcoes = porcoes.toDoubleOrNull() ?: 0.0,
+                                    ingredientes = listaIngredientes.toList(),
+                                    passos = listaPassos.toList().mapIndexed { index, passo ->
+                                        passo.copy(ordem = index + 1)
+                                    }
+                                )
+                                viewModel.atualizarReceita(recipeId, receitaAtualizada) {
+                                    onSaveSuccess()
+                                }
+                            }
+                        },
+                        onDeleteClick = {
+                            viewModel.deletarReceita(recipeId) {
+                                onDeleteSucess()
+                            }
+                        }
+                    )
+                }
+                item {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 24.dp)
+                    ) {
+                        Spacer(modifier = Modifier.height(24.dp))
+                        EditInfoSection(
+                            titulo = titulo, onTituloChange = { titulo = it },
+                            descricao = descricao, onDescricaoChange = { descricao = it },
+                            tempo = tempo, onTempoChange = { tempo = it },
+                            porcoes = porcoes, onPorcoesChange = { porcoes = it }
+                        )
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        EditIngredientSection(listaIngredientes)
+                        Spacer(modifier = Modifier.height(24.dp))
+                        EditaPassoSection(listaPassos)
+                    }
+                }
             }
         }
     }
@@ -223,7 +278,7 @@ fun EditInfoSection(
 }
 
 @Composable
-fun EditIngredientSection(ingredientes: MutableList<String>){
+fun EditIngredientSection(ingredientes: MutableList<IngredienteResposta>){
     Column {
         ingredientes.forEachIndexed{ index, ingrediente ->
             Row(
@@ -234,8 +289,10 @@ fun EditIngredientSection(ingredientes: MutableList<String>){
             ) {
                 Text(text = "• ", fontSize = 18.sp)
                 TransparentTextField(
-                    value = ingrediente, 
-                    onValueChange = { novoTexto -> ingredientes[index] = novoTexto }, 
+                    value = ingrediente.nome, 
+                    onValueChange = { novoTexto -> 
+                        ingredientes[index] = ingredientes[index].copy(nome = novoTexto) 
+                    }, 
                     textStyle = TextStyle(fontSize = 16.sp),
                     modifier = Modifier.weight(1f)
                 )
@@ -253,7 +310,7 @@ fun EditIngredientSection(ingredientes: MutableList<String>){
             }
         }
         TextButton(
-            onClick = { ingredientes.add("") },
+            onClick = { ingredientes.add(IngredienteResposta(0, "", "")) },
             colors = ButtonDefaults.textButtonColors(contentColor = Laranja)
         ) {
             Icon(
@@ -267,7 +324,7 @@ fun EditIngredientSection(ingredientes: MutableList<String>){
 }
 
 @Composable
-fun EditaPassoSection(passos: MutableList<String>){
+fun EditaPassoSection(passos: MutableList<PassoResposta>){
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -299,8 +356,10 @@ fun EditaPassoSection(passos: MutableList<String>){
                     }
                     Spacer(modifier = Modifier.height(10.dp))
                     TransparentTextField(
-                        value = passo, 
-                        onValueChange = { novoTexto -> passos[index] = novoTexto }, 
+                        value = passo.descricao, 
+                        onValueChange = { novoTexto -> 
+                            passos[index] = passos[index].copy(descricao = novoTexto) 
+                        }, 
                         textStyle = TextStyle(fontSize = 16.sp),
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = false
@@ -309,7 +368,7 @@ fun EditaPassoSection(passos: MutableList<String>){
             }
         }
         TextButton(
-            onClick = { passos.add("") },
+            onClick = { passos.add(PassoResposta(0, passos.size + 1, "")) },
             colors = ButtonDefaults.textButtonColors(contentColor = Laranja)
         ) {
             Icon(

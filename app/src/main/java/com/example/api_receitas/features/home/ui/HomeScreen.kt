@@ -98,7 +98,7 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if(viewModel.estaLogado && viewModel.listaReceitas.isEmpty()) {
+            if(viewModel.carregando && viewModel.listaReceitas.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }

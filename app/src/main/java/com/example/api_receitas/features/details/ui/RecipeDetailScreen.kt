@@ -53,7 +53,7 @@ fun RecipeDetailScreen(
     }
     val receita = viewModel.receita
 
-    if (viewModel.estaLogado) {
+    if (viewModel.carregando) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }

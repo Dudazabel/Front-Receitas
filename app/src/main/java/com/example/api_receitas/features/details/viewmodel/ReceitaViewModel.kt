@@ -11,13 +11,14 @@ import kotlinx.coroutines.launch
 
 class ReceitaViewModel: ViewModel() {
 
-        var receita by mutableStateOf<ReceitaResposta?>(null)
-        var estaLogado by mutableStateOf(true)
-        var mensagemFeedback by mutableStateOf("")
-        var listaReceitas by mutableStateOf<List<ReceitaResposta>>(emptyList())
+    var receita by mutableStateOf<ReceitaResposta?>(null)
+    var carregando by mutableStateOf(false)
+    var mensagemFeedback by mutableStateOf("")
+    var listaReceitas by mutableStateOf<List<ReceitaResposta>>(emptyList())
+
     fun buscaReceitaPorId(id: Long) {
         viewModelScope.launch {
-            estaLogado = true
+            carregando = true
             try {
                 val resposta = ReceitaApiService.RetrofitClient.apiService.buscarReceitaPorId(id)
 
@@ -30,29 +31,64 @@ class ReceitaViewModel: ViewModel() {
             } catch (e: Exception) {
                 mensagemFeedback = "Ocorreu uma falha no carregamento: ${e.message}"
             } finally {
-                estaLogado = false
+                carregando = false
             }
         }
     }
+
     fun buscarTodasAsReceitas(){
         viewModelScope.launch {
-            estaLogado = true
+            carregando = true
             try{
                 val resposta = ReceitaApiService.RetrofitClient.apiService.ListarTodasAsReceitas()
                 if(resposta.isSuccessful){
                     listaReceitas = resposta.body() ?: emptyList()
                 }else{
-                    mensagemFeedback = "Nao foi possivel carregar a api ${resposta.code()}"
+                    mensagemFeedback = "Não foi possível carregar a api ${resposta.code()}"
                 }
 
             }catch (e:Exception){
-                mensagemFeedback = "Nao foi possivel se conectar a api ${e.message}"
+                mensagemFeedback = "Não foi possível se conectar a api ${e.message}"
 
             }finally {
-                estaLogado = false;
+                carregando = false
             }
         }
     }
 
+    fun atualizarReceita(id: Long, receitaAtualizada: ReceitaResposta, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            carregando = true
+            try {
+                val resposta = ReceitaApiService.RetrofitClient.apiService.AtualizarReceita(id, receitaAtualizada)
+                if (resposta.isSuccessful) {
+                    onSuccess()
+                } else {
+                    mensagemFeedback = "Erro ao atualizar receita: ${resposta.code()}"
+                }
+            } catch (e: Exception) {
+                mensagemFeedback = "Erro de conexão: ${e.message}"
+            } finally {
+                carregando = false
+            }
+        }
+    }
 
+    fun deletarReceita(id: Long, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            carregando = true
+            try {
+                val resposta = ReceitaApiService.RetrofitClient.apiService.DeletarReceita(id)
+                if (resposta.isSuccessful) {
+                    onSuccess()
+                } else {
+                    mensagemFeedback = "Erro ao deletar receita: ${resposta.code()}"
+                }
+            } catch (e: Exception) {
+                mensagemFeedback = "Erro de conexão: ${e.message}"
+            } finally {
+                carregando = false
+            }
+        }
+    }
 }
