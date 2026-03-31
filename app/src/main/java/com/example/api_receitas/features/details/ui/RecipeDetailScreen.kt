@@ -1,5 +1,6 @@
 package com.example.api_receitas.features.details.ui
 
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +42,12 @@ import com.example.api_receitas.data.model.receita.resposta.IngredienteResposta
 import com.example.api_receitas.data.model.receita.resposta.PassoResposta
 import com.example.api_receitas.data.model.receita.resposta.ReceitaResposta
 import com.example.api_receitas.features.details.viewmodel.ReceitaViewModel
+import android.util.Base64
+import androidx.compose.foundation.Image
+import androidx.compose.material3.CardDefaults
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import com.example.api_receitas.ui.theme.AzulClaro
 
 @Composable
 fun RecipeDetailScreen(
@@ -67,6 +75,7 @@ fun RecipeDetailScreen(
         ) {
             item {
                 TopImage(
+                    fotoBase64 = receita.foto,
                     onVoltarClick = onVoltarClick,
                     onEditClick = onEditClick
                 )
@@ -78,9 +87,9 @@ fun RecipeDetailScreen(
                     Spacer(modifier = Modifier.height(24.dp))
                     InfoSection(receita)
                     Spacer(modifier = Modifier.height(24.dp))
-                    IngrendientSection(receita.ingredientes)
+                    IngrendientSection(receita.ingredientes ?: emptyList())
                     Spacer(modifier = Modifier.height(24.dp))
-                    PassoSection(receita.passos)
+                    PassoSection(receita.passos ?: emptyList())
                 }
             }
         }
@@ -89,9 +98,22 @@ fun RecipeDetailScreen(
 
 @Composable
 fun TopImage(
+    fotoBase64: String?,
     onVoltarClick: () -> Unit,
     onEditClick: () -> Unit
 ) {
+    val bitmap = remember(fotoBase64){
+        if(!fotoBase64.isNullOrEmpty()){
+            try{
+                val imageBytes = Base64.decode(fotoBase64, Base64.DEFAULT)
+                BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+            } catch (e: Exception){
+                null
+            }
+        } else {
+            null
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -99,6 +121,14 @@ fun TopImage(
             .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
             .background(Color.DarkGray)
     ) {
+        if(bitmap != null){
+            Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = "Foto da Receita",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -200,7 +230,10 @@ fun PassoSection(passos: List<PassoResposta>) {
 
         passosOrdenados.forEachIndexed { index, passo ->
             Card(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFF0F0F0)
+                )
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp)

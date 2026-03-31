@@ -1,5 +1,6 @@
 package com.example.api_receitas.features.home.ui
 
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -50,6 +51,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -63,6 +66,8 @@ import com.example.api_receitas.features.details.viewmodel.ReceitaViewModel
 import com.example.api_receitas.ui.theme.AzulClaro
 import com.example.api_receitas.ui.theme.Laranja
 import kotlinx.coroutines.launch
+import java.lang.Exception
+import android.util.Base64
 
 @Composable
 fun HomeScreen(
@@ -265,7 +270,7 @@ fun SearchSection(
         },
         singleLine = true,
         colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color(0xFFF0F0F0),
+            focusedContainerColor = Color(0xFFdbdbdb),
             unfocusedContainerColor = Color(0xFFF0F0F0),
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
@@ -304,6 +309,18 @@ fun RecipeCard(
     receita: ReceitaResposta,
     onClick: () -> Unit
 ){
+    val bitmap = remember(receita.foto) {
+        if(!receita.foto.isNullOrEmpty()){
+            try{
+                val imageBytes = Base64.decode(receita.foto, Base64.DEFAULT)
+                BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+            } catch (e: Exception){
+                null
+            }
+        } else {
+            null
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -311,13 +328,24 @@ fun RecipeCard(
             .clickable { onClick() }
             .padding(bottom = 16.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(140.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color.LightGray)
-        ) {
+        if(bitmap != null){
+            Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = "Foto de ${receita.nome}",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp)
+                    .clip(RoundedCornerShape(16.dp)),
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color.LightGray)
+            )
         }
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -328,7 +356,7 @@ fun RecipeCard(
             modifier = Modifier.padding(horizontal = 8.dp)
         )
 
-        val resumoIngredientes = if (receita.ingredientes.isNotEmpty()){
+        val resumoIngredientes = if (!receita.ingredientes.isNullOrEmpty()){
             receita.ingredientes.take(3).joinToString(" - ") { it.nome }
         } else {
             "Sem ingredientes listados"

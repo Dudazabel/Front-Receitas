@@ -6,4 +6,6 @@ data class ReceitaRequisicao (
     val tempoPreparo: Double,
     val porcoes: Double,
     val ingredientes: List<IngredienteRequisicao>,
-    val passos: List<PassoRequisicao>)
+    val passos: List<PassoRequisicao>,
+    val foto: String? = null
+)

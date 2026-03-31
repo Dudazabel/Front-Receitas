@@ -1,6 +1,8 @@
 package com.example.api_receitas.features.edit.ui
 
+import android.graphics.BitmapFactory
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,6 +44,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -57,6 +61,10 @@ import com.example.api_receitas.data.model.receita.resposta.IngredienteResposta
 import com.example.api_receitas.data.model.receita.resposta.PassoResposta
 import com.example.api_receitas.features.details.viewmodel.ReceitaViewModel
 import com.example.api_receitas.ui.theme.Laranja
+import android.util.Base64
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import com.example.api_receitas.features.create.ui.uriToBase64
 
 @Composable
 fun RecipeEditScreen(
@@ -67,6 +75,20 @@ fun RecipeEditScreen(
     onDeleteSucess: () -> Unit
 ){
     val context = LocalContext.current
+
+    var fotoBase64 by rememberSaveable { mutableStateOf<String?>(null) }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) {uri ->
+        val base64 = uriToBase64(context, uri)
+        if(base64 != null){
+            fotoBase64 = base64
+        } else {
+            Toast.makeText(context, "Erro ao carregar imagem", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     var titulo by rememberSaveable { mutableStateOf("") }
     var descricao by rememberSaveable { mutableStateOf("") }
     var tempo by rememberSaveable { mutableStateOf("") }
@@ -86,18 +108,24 @@ fun RecipeEditScreen(
         viewModel.buscaReceitaPorId(recipeId)
     }
 
+    var dadosCarregados by rememberSaveable { mutableStateOf(false) }
+
     LaunchedEffect(viewModel.receita) {
-        viewModel.receita?.let { receita ->
-            titulo = receita.nome
-            descricao = receita.descricao
-            tempo = receita.tempoPreparo.toInt().toString()
-            porcoes = receita.porcoes.toInt().toString()
-            
-            listaIngredientes.clear()
-            listaIngredientes.addAll(receita.ingredientes)
-            
-            listaPassos.clear()
-            listaPassos.addAll(receita.passos)
+        if(!dadosCarregados){
+            viewModel.receita?.let { receita ->
+                titulo = receita.nome
+                descricao = receita.descricao
+                tempo = receita.tempoPreparo.toInt().toString()
+                porcoes = receita.porcoes.toInt().toString()
+                fotoBase64 = receita.foto
+
+                listaIngredientes.clear()
+                listaIngredientes.addAll(receita.ingredientes ?: emptyList())
+
+                listaPassos.clear()
+                listaPassos.addAll(receita.passos ?: emptyList())
+                dadosCarregados = true
+            }
         }
     }
 
@@ -113,6 +141,7 @@ fun RecipeEditScreen(
             ) {
                 item {
                     TopImage(
+                        fotoBase64 = fotoBase64,
                         onBackClick = onBackClick,
                         onSaveClick = {
                             val quantidadeInvalida = listaIngredientes.any{ ingrediente ->
@@ -150,7 +179,8 @@ fun RecipeEditScreen(
                                     tempoPreparo = tempoFinal,
                                     porcoes = porcoesFinal,
                                     ingredientes = ingredientesRequest,
-                                    passos = passosRequest
+                                    passos = passosRequest,
+                                    foto = fotoBase64
                                 )
 
                                 viewModel.atualizarReceita(recipeId, receitaAtualizada) {
@@ -162,6 +192,9 @@ fun RecipeEditScreen(
                             viewModel.deletarReceita(recipeId) {
                                 onDeleteSucess()
                             }
+                        },
+                        onEditImageClick = {
+                            launcher.launch("image/*")
                         }
                     )
                 }
@@ -190,10 +223,24 @@ fun RecipeEditScreen(
 
 @Composable
 fun TopImage(
+    fotoBase64: String?,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
+    onEditImageClick: () -> Unit
 ){
+    val bitmap = remember(fotoBase64){
+        if(!fotoBase64.isNullOrEmpty()){
+            try{
+                val sPura = if(fotoBase64.contains(",")) fotoBase64.substringAfter(",") else fotoBase64
+                val imageBytes = Base64.decode(sPura, Base64.DEFAULT)
+                BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+            } catch (e: Exception) {
+
+                null
+            }
+        } else null
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -201,6 +248,27 @@ fun TopImage(
             .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
             .background(Color.Gray)
     ) {
+        if(bitmap != null){
+            Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = "Foto da Receita",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
+        IconButton(
+            onClick = onEditImageClick,
+            modifier = Modifier
+                .align(Alignment.Center)
+                .background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                .size(64.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Trocar Foto",
+                tint = Color.White
+            )
+        }
         Row(
             modifier = Modifier
                 .fillMaxWidth()

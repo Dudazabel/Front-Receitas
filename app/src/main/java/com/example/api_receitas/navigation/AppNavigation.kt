@@ -98,9 +98,7 @@ fun AppNavigation() {
             TelaConfimacao(
                 mensagem = mensagemExibida,
                 onOkClick = {
-                    navController.navigate(Screen.Home.route){
-                        popUpTo(Screen.Confirmation.route) { inclusive = true }
-                    }
+                    navController.popBackStack()
                 }
             )
         }
@@ -132,7 +130,7 @@ fun AppNavigation() {
                 onSaveSuccess = { navController.popBackStack() },
                 onDeleteSucess = {
                     navController.navigate(Screen.Confirmation.createRoute("delete")) {
-                        popUpTo(Screen.Home.route) { inclusive = true }
+                        popUpTo(Screen.Details.route) { inclusive = true }
                     }
                 }
             )

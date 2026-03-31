@@ -1,9 +1,22 @@
 package com.example.api_receitas.features.create.ui
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import android.util.Base64
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -11,6 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Add
@@ -23,6 +37,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -31,15 +46,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.example.api_receitas.ui.theme.Cinza
 import com.example.api_receitas.ui.theme.Laranja
 import com.example.api_receitas.features.details.viewmodel.ReceitaViewModel
 import com.example.api_receitas.data.model.receita.requisicao.IngredienteRequisicao
 import com.example.api_receitas.data.model.receita.requisicao.PassoRequisicao
+import java.io.ByteArrayOutputStream
+import java.lang.Exception
 
 data class Ingredientes(
     val nome: String,
@@ -50,12 +71,33 @@ data class Passos(
     val descricao: String
 )
 
+fun uriToBase64(context: Context, uri: Uri?): String? {
+    if(uri == null) return null
+    return try {
+        val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P){
+            val source = ImageDecoder.createSource(context.contentResolver, uri)
+            ImageDecoder.decodeBitmap(source)
+        } else {
+            @Suppress("DEPRECATION")
+            MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+        }
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream)
+        val byteArray = outputStream.toByteArray()
+        Base64.encodeToString(byteArray, Base64.NO_WRAP)
+    } catch (e: Exception){
+        e.printStackTrace()
+        null
+    }
+}
+
 @Composable
 fun CreateRecipe(
     onBackClick: () -> Unit,
     onRecipeSaved: () -> Unit,
     viewModel: ReceitaViewModel = viewModel()
 ) {
+    val context = LocalContext.current
 
     var nomeReceita by remember { mutableStateOf("") }
     var descricaoReceita by remember { mutableStateOf("") }
@@ -68,6 +110,15 @@ fun CreateRecipe(
     val ingredientes = remember { mutableStateListOf<Ingredientes>() }
     var descricaoPassos by remember { mutableStateOf("") }
     val passos = remember { mutableStateListOf<Passos>() }
+
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            imageUri = uri
+        }
+    )
 
     LazyColumn(
         modifier = Modifier
@@ -95,6 +146,41 @@ fun CreateRecipe(
                     text = "Cadastro de receita",
                     fontSize = 20.sp
                 )
+            }
+        }
+        item {
+            Spacer(modifier = Modifier.height(24.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color.LightGray)
+                    .clickable {
+                        photoPickerLauncher.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                if(imageUri == null){
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Adicionar foto",
+                            modifier = Modifier.size(40.dp),
+                            tint = Color.Gray
+                        )
+                        Text("Adicionar foto", color = Color.Gray)
+                    }
+                } else {
+                    AsyncImage(
+                        model = imageUri,
+                        contentDescription = "Foto da receita",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
             }
         }
 
@@ -295,11 +381,19 @@ fun CreateRecipe(
             Button(
                 onClick = {
                     val ingredientesReq = ingredientes.map {
-                        IngredienteRequisicao(it.nome, it.quantidade)
+                        IngredienteRequisicao(
+                            it.nome,
+                            it.quantidade
+                        )
                     }
-                    val passosReq = passos.map {
-                        PassoRequisicao(it.descricao)
+                    val passosReq = passos.mapIndexed { index, passo ->
+                        PassoRequisicao(
+                            descricao = passo.descricao,
+                            ordem = index + 1
+                        )
                     }
+
+                    val base64Image = uriToBase64(context, imageUri)
 
                     viewModel.CriarNovaReceita(
                         nome = nomeReceita,
@@ -308,6 +402,7 @@ fun CreateRecipe(
                         porcoes = porcoes,
                         ingredientes = ingredientesReq,
                         passos = passosReq,
+                        foto = base64Image,
                         onSuccess = {
                             onRecipeSaved()
                         }
