@@ -132,15 +132,15 @@ const val BASE_URL = "https://api-receitas-pb3e.onrender.com/"
   <tr>
     <td align="center" width="160" height="200" style="border:2px solid #ccc;">
       <img src="https://github.com/Liiiiisssz.png" width="115" height="115"><br>
-      <sub><a href="https://github.com/Liiiiisssz">Elis Jasper</a><br><span style="color:#32CD32"><b>⚙️ Backend</b></span></sub>
+      <sub><a href="https://github.com/Liiiiisssz">Elis Jasper</a><br><span style="color:#32CD32"><b>⚙️ Frontend</b></span></sub>
     </td>
     <td align="center" width="160" height="200" style="border:2px solid #ccc;">
       <img src="https://github.com/KaelLuih.png" width="115" height="115"><br>
-      <sub><a href="https://github.com/KaelLuih">Kael Luih de Araujo</a><br><span style="color:#FF69B4"><b>⚙️ Backend</b></span></sub>
+      <sub><a href="https://github.com/KaelLuih">Kael Luih de Araujo</a><br><span style="color:#FF69B4"><b>⚙️ Frontend</b></span></sub>
     </td>
     <td align="center" width="160" height="200" style="border:2px solid #ccc;">
       <img src="https://github.com/Dudazabel.png" width="115" height="115"><br>
-      <sub><a href="https://github.com/Dudazabel">Maria E. Zabel</a><br><span style="color:#32CD32"><b>⚙️ Backend</b></span></sub>
+      <sub><a href="https://github.com/Dudazabel">Maria E. Zabel</a><br><span style="color:#32CD32"><b>⚙️ Frontend</b></span></sub>
     </td>
   </tr>
 </table>
