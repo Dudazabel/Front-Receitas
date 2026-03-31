@@ -37,7 +37,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -132,7 +131,7 @@ fun CreateRecipe(
                     onClick = { onBackClick() },
                     modifier = Modifier
                         .background(Cinza, CircleShape)
-                        .size(48.dp)
+                        .size(40.dp)
                 ) {
                     Icon(
                         Icons.AutoMirrored.Filled.KeyboardArrowLeft,
@@ -155,7 +154,7 @@ fun CreateRecipe(
                     .fillMaxWidth()
                     .height(200.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color.LightGray)
+                    .background(Cinza)
                     .clickable {
                         photoPickerLauncher.launch(
                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)

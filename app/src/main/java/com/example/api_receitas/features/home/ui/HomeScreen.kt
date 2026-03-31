@@ -68,6 +68,7 @@ import com.example.api_receitas.ui.theme.Laranja
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import android.util.Base64
+import com.example.api_receitas.ui.theme.AzulEscuro
 
 @Composable
 fun HomeScreen(
@@ -150,7 +151,7 @@ fun Conteudo(
               focusRequester = focusRequester
           )
         }
-        item{ CategoriesSection() }
+        item{ CategoriesSection(viewModel = viewModel) }
         item{ RecipeFilter(viewModel = viewModel) }
 
         items(receitas){ receita ->
@@ -235,7 +236,7 @@ fun Header(nome: String = "Usuário"){
                 }
             },
             fontSize = 18.sp,
-            color = Color.Black
+            color = AzulEscuro
         )
         Image(
             painter = painterResource(R.drawable.logo),

@@ -65,6 +65,7 @@ import android.util.Base64
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import com.example.api_receitas.features.create.ui.uriToBase64
+import com.example.api_receitas.ui.theme.Cinza
 
 @Composable
 fun RecipeEditScreen(
@@ -93,6 +94,7 @@ fun RecipeEditScreen(
     var descricao by rememberSaveable { mutableStateOf("") }
     var tempo by rememberSaveable { mutableStateOf("") }
     var porcoes by rememberSaveable { mutableStateOf("") }
+    var exibirDialogoExclusao by remember { mutableStateOf(false) }
 
     val listaIngredientes = remember { mutableStateListOf<IngredienteResposta>() }
     val listaPassos = remember { mutableStateListOf<PassoResposta>() }
@@ -189,9 +191,7 @@ fun RecipeEditScreen(
                             }
                         },
                         onDeleteClick = {
-                            viewModel.deletarReceita(recipeId) {
-                                onDeleteSucess()
-                            }
+                            exibirDialogoExclusao = true
                         },
                         onEditImageClick = {
                             launcher.launch("image/*")
@@ -217,6 +217,31 @@ fun RecipeEditScreen(
                     }
                 }
             }
+        }
+        if(exibirDialogoExclusao){
+            androidx.compose.material3.AlertDialog(
+                onDismissRequest = { exibirDialogoExclusao = false },
+                containerColor = Color.White,
+                title = { Text(text = "Excluir Receita")},
+                text = { Text("Tem certeza que deseja excluir esta receita?")},
+                confirmButton = { 
+                    TextButton(
+                        onClick = { 
+                            exibirDialogoExclusao = false
+                            viewModel.deletarReceita(recipeId) {
+                                onDeleteSucess()
+                            }
+                        }
+                    ) {
+                        Text("Excluir", color = Color.Red, fontWeight = FontWeight.Bold)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { exibirDialogoExclusao = false }) {
+                        Text("Cancelar")
+                    }
+                }
+            )
         }
     }
 }
