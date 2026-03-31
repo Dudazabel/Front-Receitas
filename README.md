@@ -113,14 +113,14 @@ O app consome a API desenvolvida em **Spring Boot**, utilizando requisições HT
 
 ### 1️⃣ Clone o repositório
 ```bash
-git clone https://github.com/seu-repositorio/app-receitas.git
+git clone https://github.com/Dudazabel/Front-Receitas.git
 ```
 ### 2️⃣ Abra no Android Studio
 
 ### 3️⃣ Configure a URL da API
 
 ```kotlin
-const val BASE_URL = "http://10.0.2.2:8080"
+const val BASE_URL = "https://api-receitas-pb3e.onrender.com/"
 ```
 ### 4️⃣ Execute o app em um emulador ou dispositivo físico 📱
 
