@@ -59,7 +59,7 @@ import com.example.api_receitas.data.model.receita.requisicao.PassoRequisicao
 import com.example.api_receitas.data.model.receita.requisicao.ReceitaRequisicao
 import com.example.api_receitas.data.model.receita.resposta.IngredienteResposta
 import com.example.api_receitas.data.model.receita.resposta.PassoResposta
-import com.example.api_receitas.features.details.viewmodel.ReceitaViewModel
+import com.example.api_receitas.data.viewmodel.ReceitaViewModel
 import com.example.api_receitas.ui.theme.Laranja
 import android.util.Base64
 import androidx.activity.compose.rememberLauncherForActivityResult

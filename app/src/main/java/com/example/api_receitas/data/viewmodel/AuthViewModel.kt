@@ -1,4 +1,4 @@
-package com.example.api_receitas.features.authentication.viewmodel
+package com.example.api_receitas.data.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

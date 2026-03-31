@@ -41,7 +41,7 @@ import com.example.api_receitas.R
 import com.example.api_receitas.data.model.receita.resposta.IngredienteResposta
 import com.example.api_receitas.data.model.receita.resposta.PassoResposta
 import com.example.api_receitas.data.model.receita.resposta.ReceitaResposta
-import com.example.api_receitas.features.details.viewmodel.ReceitaViewModel
+import com.example.api_receitas.data.viewmodel.ReceitaViewModel
 import android.util.Base64
 import androidx.compose.foundation.Image
 import androidx.compose.material3.CardDefaults

@@ -29,7 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.api_receitas.features.authentication.viewmodel.AuthViewModel
+import com.example.api_receitas.data.viewmodel.AuthViewModel
 import com.example.api_receitas.ui.theme.AzulFundo
 import com.example.api_receitas.ui.theme.Laranja
 

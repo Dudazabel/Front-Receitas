@@ -62,7 +62,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.api_receitas.R
 import com.example.api_receitas.data.model.receita.resposta.ReceitaResposta
-import com.example.api_receitas.features.details.viewmodel.ReceitaViewModel
+import com.example.api_receitas.data.viewmodel.ReceitaViewModel
 import com.example.api_receitas.ui.theme.AzulClaro
 import com.example.api_receitas.ui.theme.Laranja
 import kotlinx.coroutines.launch
@@ -249,8 +249,8 @@ fun Header(nome: String = "Usuário"){
 
 @Composable
 fun SearchSection(
-  viewModel: ReceitaViewModel,
-  focusRequester: FocusRequester
+    viewModel: ReceitaViewModel,
+    focusRequester: FocusRequester
 ){
     var searchText by remember { mutableStateOf("")}
 

@@ -55,7 +55,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.api_receitas.ui.theme.Cinza
 import com.example.api_receitas.ui.theme.Laranja
-import com.example.api_receitas.features.details.viewmodel.ReceitaViewModel
+import com.example.api_receitas.data.viewmodel.ReceitaViewModel
 import com.example.api_receitas.data.model.receita.requisicao.IngredienteRequisicao
 import com.example.api_receitas.data.model.receita.requisicao.PassoRequisicao
 import java.io.ByteArrayOutputStream
