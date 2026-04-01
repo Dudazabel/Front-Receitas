@@ -424,7 +424,7 @@ fun CreateRecipe(
 
                 colors = ButtonDefaults.textButtonColors(
                     containerColor = Laranja,
-                    disabledContentColor = Color.LightGray
+                    disabledContainerColor = Color.LightGray
                 ),
                 modifier = Modifier.fillMaxWidth()
             ) {
