@@ -157,16 +157,16 @@ class ReceitaViewModel: ViewModel() {
                          onSuccess: () -> Unit){
         viewModelScope.launch {
             try {
-            val novaReceita = ReceitaRequisicao(
-                nome = nome,
-                descricao = descricao,
-                tempoPreparo = tempoPreparo,
-                porcoes = porcoes,
-                ingredientes = ingredientes,
-                passos = passos,
-                foto = foto
-            )
-            val resposta = ReceitaApiService.RetrofitClient.apiService.AdicionarReceita(novaReceita)
+                val novaReceita = ReceitaRequisicao(
+                    nome = nome,
+                    descricao = descricao,
+                    tempoPreparo = tempoPreparo,
+                    porcoes = porcoes,
+                    ingredientes = ingredientes,
+                    passos = passos,
+                    foto = foto
+                )
+                val resposta = ReceitaApiService.RetrofitClient.apiService.AdicionarReceita(novaReceita)
                 if (resposta.isSuccessful) {
                     onSuccess()
                 } else {

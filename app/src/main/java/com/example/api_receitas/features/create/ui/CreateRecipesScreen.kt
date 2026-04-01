@@ -37,6 +37,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -110,6 +111,8 @@ fun CreateRecipe(
     var descricaoPassos by remember { mutableStateOf("") }
     val passos = remember { mutableStateListOf<Passos>() }
 
+    var isSubmitting by remember { mutableStateOf(false) }
+
     var imageUri by remember { mutableStateOf<Uri?>(null) }
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
@@ -118,6 +121,12 @@ fun CreateRecipe(
             imageUri = uri
         }
     )
+
+    LaunchedEffect(viewModel.mensagemFeedback) {
+        if (viewModel.mensagemFeedback.isNotEmpty()){
+            isSubmitting = false
+        }
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -379,6 +388,9 @@ fun CreateRecipe(
             Spacer(modifier = Modifier.height(40.dp))
             Button(
                 onClick = {
+                    isSubmitting = true
+                    viewModel.mensagemFeedback = ""
+
                     val ingredientesReq = ingredientes.map {
                         IngredienteRequisicao(
                             it.nome,
@@ -403,15 +415,21 @@ fun CreateRecipe(
                         passos = passosReq,
                         foto = base64Image,
                         onSuccess = {
+                            isSubmitting = false
                             onRecipeSaved()
                         }
                     )
                 },
-                colors = ButtonDefaults.textButtonColors(containerColor = Laranja),
+                enabled = !isSubmitting,
+
+                colors = ButtonDefaults.textButtonColors(
+                    containerColor = Laranja,
+                    disabledContentColor = Color.LightGray
+                ),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "Criar Receita",
+                    text = if (isSubmitting) "Criando..." else "Criar Receita",
                     fontSize = 17.sp,
                     color = Color.White
                 )
